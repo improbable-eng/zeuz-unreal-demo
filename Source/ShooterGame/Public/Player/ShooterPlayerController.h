@@ -288,6 +288,9 @@ public:
 	/** Return the client to the main menu gracefully.  ONLY sets GI state. */
 	void ClientReturnToMainMenu_Implementation(const FString& ReturnReason) override;
 
+	/** Return the client to the main menu gracefully */
+	void ClientReturnToMainMenuWithTextReason_Implementation(const FText& ReturnReason) override;
+
 	/** Causes the player to commit suicide */
 	UFUNCTION(exec)
 	virtual void Suicide();

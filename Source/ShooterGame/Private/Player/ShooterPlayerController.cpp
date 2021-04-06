@@ -806,6 +806,24 @@ void AShooterPlayerController::ClientReturnToMainMenu_Implementation(const FStri
 	bGameEndedFrame = false;
 }
 
+void AShooterPlayerController::ClientReturnToMainMenuWithTextReason_Implementation(const FText& ReturnReason)
+{
+	this->HandleReturnToMainMenu();
+
+	const UWorld* World = GetWorld();
+	UShooterGameInstance* SGI = World != NULL ? Cast<UShooterGameInstance>(World->GetGameInstance()) : NULL;
+
+	if (!ensure(SGI != NULL))
+	{
+		return;
+	}
+
+	SGI->GotoState(ShooterGameInstanceState::MainMenu);
+
+	// Clear the flag so we don't do normal end of round stuff next
+	bGameEndedFrame = false;
+}
+
 /** Ends and/or destroys game session */
 void AShooterPlayerController::CleanupSessionOnReturnToMenu()
 {
