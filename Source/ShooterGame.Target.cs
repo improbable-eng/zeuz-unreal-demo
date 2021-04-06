@@ -8,8 +8,8 @@ public class ShooterGameTarget : TargetRules
     public ShooterGameTarget(TargetInfo Target) : base(Target)
     {
         Type = TargetType.Game;
-        bUsesSteam = true;
+        bUsesSteam = false;
 
-		ExtraModuleNames.Add("ShooterGame");
+        ExtraModuleNames.Add("ShooterGame");
     }
 }
