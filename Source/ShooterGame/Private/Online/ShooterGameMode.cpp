@@ -102,13 +102,15 @@ void AShooterGameMode::DefaultTimer()
 		{
 			if (GetMatchState() == MatchState::WaitingPostMatch)
 			{
+				// Send the players back to the main menu
 				for (FConstControllerIterator It = GetWorld()->GetControllerIterator(); It; ++It)
 				{
 					AShooterPlayerController* PlayerState = Cast<AShooterPlayerController>(*It);
 					PlayerState->ClientReturnToMainMenuWithTextReason(NSLOCTEXT("", "", ""));
 				}
 
-				// TODO: Kill game server process (if authoritative...)
+				// Exit the server
+				FGenericPlatformMisc::RequestExit(false);
 			}
 			else if (GetMatchState() == MatchState::InProgress)
 			{
