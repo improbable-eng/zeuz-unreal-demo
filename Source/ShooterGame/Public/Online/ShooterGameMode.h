@@ -4,6 +4,8 @@
 
 #include "OnlineIdentityInterface.h"
 #include "ShooterPlayerController.h"
+#include "A2S/A2SServer.h"
+
 #include "ShooterGameMode.generated.h"
 
 class AShooterAIController;
@@ -81,6 +83,10 @@ class AShooterGameMode : public AGameMode
 
 	virtual void PostInitProperties() override;
 
+	virtual void BeginPlay() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 protected:
 
 	/** delay between first player login and starting match */
@@ -121,6 +127,8 @@ protected:
 	bool bNeedsBotCreation;
 
 	bool bAllowBots;		
+
+	FA2SServer* A2SServer; 
 
 	/** spawning all bots for this game */
 	void StartBots();

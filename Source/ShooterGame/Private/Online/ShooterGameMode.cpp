@@ -32,6 +32,8 @@ AShooterGameMode::AShooterGameMode(const FObjectInitializer& ObjectInitializer) 
 	bAllowBots = true;	
 	bNeedsBotCreation = true;
 	bUseSeamlessTravel = FParse::Param(FCommandLine::Get(), TEXT("NoSeamlessTravel")) ? false : true;
+
+	A2SServer = new FA2SServer();
 }
 
 void AShooterGameMode::PostInitProperties()
@@ -78,6 +80,20 @@ void AShooterGameMode::PreInitializeComponents()
 	Super::PreInitializeComponents();
 
 	GetWorldTimerManager().SetTimer(TimerHandle_DefaultTimer, this, &AShooterGameMode::DefaultTimer, GetWorldSettings()->GetEffectiveTimeDilation(), true);
+}
+
+void AShooterGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	UE_LOG(LogA2S, Warning, TEXT("In BeginPlay"))
+	A2SServer->Start();
+}
+
+void AShooterGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	UE_LOG(LogA2S, Warning, TEXT("In EndPlay"))
+	A2SServer->Stop();
+	Super::EndPlay(EndPlayReason);
 }
 
 void AShooterGameMode::DefaultTimer()
