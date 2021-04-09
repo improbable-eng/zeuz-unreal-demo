@@ -103,14 +103,10 @@ void AShooterGameMode::DefaultTimer()
 			if (GetMatchState() == MatchState::WaitingPostMatch)
 			{
 				// Send the players back to the main menu
-				for (FConstControllerIterator It = GetWorld()->GetControllerIterator(); It; ++It)
+				for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 				{
-					AShooterPlayerController* PlayerState = Cast<AShooterPlayerController>(*It);
-					PlayerState->ClientReturnToMainMenuWithTextReason(NSLOCTEXT("", "", ""));
+					(*It)->ClientReturnToMainMenuWithTextReason(NSLOCTEXT("", "", ""));
 				}
-
-				// Exit the server
-				FGenericPlatformMisc::RequestExit(false);
 			}
 			else if (GetMatchState() == MatchState::InProgress)
 			{
@@ -134,6 +130,15 @@ void AShooterGameMode::DefaultTimer()
 			{
 				StartMatch();
 			}
+		}
+	}
+	else if (GetMatchState() == MatchState::WaitingPostMatch)
+	{
+		// The post match is over (no time left) so wait for clients to be disconnected 
+		if (GetNumPlayers() == 0)
+		{
+			// All players have disconnected, exit the server
+			FGenericPlatformMisc::RequestExit(false);
 		}
 	}
 }
