@@ -105,7 +105,9 @@ void AShooterGameMode::DefaultTimer()
 				// Send the players back to the main menu
 				for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 				{
-					(*It)->ClientReturnToMainMenuWithTextReason(NSLOCTEXT("", "", ""));
+					(*It)->ClientReturnToMainMenuWithTextReason(NSLOCTEXT("GameMessages", "MatchEnded", "The match has ended."));
+					AShooterPlayerController* ShooterPlayerController = Cast<AShooterPlayerController>(*It);
+					ShooterPlayerController->HandleReturnToMainMenu();
 				}
 			}
 			else if (GetMatchState() == MatchState::InProgress)

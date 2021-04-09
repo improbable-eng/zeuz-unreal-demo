@@ -171,11 +171,11 @@ FText SShooterScoreboardWidget::GetMatchEndText() const
 		{
 			if (GameState->RemainingTime > 0)
 			{
-				return FText::Format(LOCTEXT("MatchEndTimeString", "Returning to main menu in: {0}"), FText::AsNumber(GameState->RemainingTime));
+				return FText::Format(LOCTEXT("MatchEndTimeString", "Match ending in: {0}"), FText::AsNumber(GameState->RemainingTime));
 			}
 			else
 			{
-				return LOCTEXT("MatchEndingString", "Returning to main menu...");
+				return LOCTEXT("MatchEndingString", "Match ending...");
 			}
 		}
 	}
