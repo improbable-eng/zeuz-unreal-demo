@@ -34,21 +34,12 @@ void FA2SServer::Start()
 
 void FA2SServer::Stop()
 {
-	// TODO:
-	// CloseReceiveSocket();
-	// CloseSendSocket();
-	
 	UDPReceiver->Stop();
+
+	CloseReceiveSocket();
+	CloseSendSocket();
+
 	UE_LOG(LogA2S, Display, TEXT("Stopping A2S server"))
-}
-
-bool FA2SServer::OpenSendSocket()
-{
-	SenderSocket = FUdpSocketBuilder(FString(TEXT("ue4-a2s-send"))).AsReusable();
-
-	SenderSocket->SetSendBufferSize(BufferSize, BufferSize);
-	SenderSocket->SetReceiveBufferSize(BufferSize, BufferSize);
-	return true;
 }
 
 bool FA2SServer::OpenReceiveSocket()
@@ -73,6 +64,36 @@ bool FA2SServer::OpenReceiveSocket()
 
 		this->HandleRequest(Data, Endpoint);
 	});
+
+	return true;
+}
+
+bool FA2SServer::OpenSendSocket()
+{
+	SenderSocket = FUdpSocketBuilder(FString(TEXT("ue4-a2s-send"))).AsReusable();
+
+	SenderSocket->SetSendBufferSize(BufferSize, BufferSize);
+	SenderSocket->SetReceiveBufferSize(BufferSize, BufferSize);
+	return true;
+}
+
+bool FA2SServer::CloseReceiveSocket()
+{
+	delete UDPReceiver;
+	UDPReceiver = nullptr;
+
+	ReceiverSocket->Close();
+	ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(ReceiverSocket);
+	ReceiverSocket = nullptr;
+
+	return true;
+}
+
+bool FA2SServer::CloseSendSocket()
+{
+	SenderSocket->Close();
+	ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(SenderSocket);
+	SenderSocket = nullptr;
 
 	return true;
 }

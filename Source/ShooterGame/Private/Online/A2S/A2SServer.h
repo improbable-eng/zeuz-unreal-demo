@@ -15,7 +15,10 @@ class FA2SServer
 {
 public:
 	FA2SServer();
-	~FA2SServer(){};
+
+	~FA2SServer()
+	{
+	};
 
 	/** Start the A2S server */
 	void Start();
@@ -24,11 +27,17 @@ public:
 	void Stop();
 
 private:
+	/** Open a UDP socket for receiving */
+	bool OpenReceiveSocket();
+
 	/** Open a UDP socket for sending */
 	bool OpenSendSocket();
 
-	/** Open a UDP socket for receiving */
-	bool OpenReceiveSocket();
+	/** Close the UDP socket created by 'OpenSendSocket' */
+	bool CloseReceiveSocket();
+
+	/** Close the UDP socket created by 'OpenReceiveSocket' */
+	bool CloseSendSocket();
 
 	/** Handle an A2S query */
 	void HandleRequest(const TArray<uint8> Data, const FIPv4Endpoint& Endpoint);
