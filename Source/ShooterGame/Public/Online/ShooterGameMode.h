@@ -128,7 +128,10 @@ protected:
 
 	bool bAllowBots;		
 
-	FA2SServer* A2SServer; 
+	UA2SServer* A2SServer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FA2SServerSettings Settings;
 
 	/** spawning all bots for this game */
 	void StartBots();

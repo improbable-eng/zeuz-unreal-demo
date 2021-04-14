@@ -3,20 +3,20 @@
 
 DEFINE_LOG_CATEGORY(LogA2S);
 
-FA2SServer::FA2SServer()
+void UA2SServer::ParseCLIOptions()
 {
 	// Get the port to listen on
-	if (!FParse::Value(FCommandLine::Get(), TEXT("statsPort"), ListenPort))
+	if (!FParse::Value(FCommandLine::Get(), TEXT("statsPort"), Settings.ListenPort))
 	{
-		UE_LOG(LogA2S, Warning, TEXT("No stats listen port given in CLI (-statsPort), defaulting to %d"), ListenPort)
+		UE_LOG(LogA2S, Warning, TEXT("No stats listen port given in CLI (-statsPort), defaulting to %d"), Settings.ListenPort)
 	}
-	if (!FParse::Value(FCommandLine::Get(), TEXT("statsSendPort"), ListenPort))
+	if (!FParse::Value(FCommandLine::Get(), TEXT("statsSendPort"), Settings.ListenPort))
 	{
-		UE_LOG(LogA2S, Warning, TEXT("No stats send port given in CLI (-statsSendPort), defaulting to %d"), SendPort)
+		UE_LOG(LogA2S, Warning, TEXT("No stats send port given in CLI (-statsSendPort), defaulting to %d"), Settings.SendPort)
 	}
 }
 
-void FA2SServer::Start()
+void UA2SServer::Start()
 {
 	if (IsStarted)
 	{
@@ -24,15 +24,17 @@ void FA2SServer::Start()
 		return;
 	}
 
+	ParseCLIOptions();
+
 	OpenReceiveSocket();
 	OpenSendSocket();
 
 	UDPReceiver->Start();
 	IsStarted = true;
-	UE_LOG(LogA2S, Display, TEXT("Started A2S server on port %d (sending on port %d)"), ListenPort, SendPort)
+	UE_LOG(LogA2S, Display, TEXT("Started A2S server on port %d (sending on port %d)"), Settings.ListenPort, Settings.SendPort)
 }
 
-void FA2SServer::Stop()
+void UA2SServer::Stop()
 {
 	UDPReceiver->Stop();
 
@@ -42,14 +44,14 @@ void FA2SServer::Stop()
 	UE_LOG(LogA2S, Display, TEXT("Stopping A2S server"))
 }
 
-bool FA2SServer::OpenReceiveSocket()
+bool UA2SServer::OpenReceiveSocket()
 {
-	FIPv4Endpoint Endpoint(FIPv4Address::Any, ListenPort);
+	FIPv4Endpoint Endpoint(FIPv4Address::Any, Settings.ListenPort);
 	ReceiverSocket = FUdpSocketBuilder(FString(TEXT("ue4-a2s-receive")))
 	                 .AsBlocking()
 	                 .AsReusable()
 	                 .BoundToEndpoint(Endpoint)
-	                 .WithReceiveBufferSize(BufferSize);
+	                 .WithReceiveBufferSize(Settings.BufferSize);
 
 	const FTimespan ThreadWaitTime = FTimespan::FromMilliseconds(100);
 	const FString ThreadName = FString::Printf(TEXT("UDP-RECEIVER-A2S"));
@@ -68,16 +70,16 @@ bool FA2SServer::OpenReceiveSocket()
 	return true;
 }
 
-bool FA2SServer::OpenSendSocket()
+bool UA2SServer::OpenSendSocket()
 {
 	SenderSocket = FUdpSocketBuilder(FString(TEXT("ue4-a2s-send"))).AsReusable();
 
-	SenderSocket->SetSendBufferSize(BufferSize, BufferSize);
-	SenderSocket->SetReceiveBufferSize(BufferSize, BufferSize);
+	SenderSocket->SetSendBufferSize(Settings.BufferSize, Settings.BufferSize);
+	SenderSocket->SetReceiveBufferSize(Settings.BufferSize, Settings.BufferSize);
 	return true;
 }
 
-bool FA2SServer::CloseReceiveSocket()
+bool UA2SServer::CloseReceiveSocket()
 {
 	delete UDPReceiver;
 	UDPReceiver = nullptr;
@@ -89,7 +91,7 @@ bool FA2SServer::CloseReceiveSocket()
 	return true;
 }
 
-bool FA2SServer::CloseSendSocket()
+bool UA2SServer::CloseSendSocket()
 {
 	SenderSocket->Close();
 	ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(SenderSocket);
@@ -98,7 +100,7 @@ bool FA2SServer::CloseSendSocket()
 	return true;
 }
 
-void FA2SServer::HandleRequest(const TArray<uint8> Data, const FIPv4Endpoint& Endpoint)
+void UA2SServer::HandleRequest(const TArray<uint8> Data, const FIPv4Endpoint& Endpoint)
 {
 	UE_LOG(LogA2S, Display, TEXT("Handling A2S request from %s"), *Endpoint.ToString())
 
@@ -110,7 +112,7 @@ void FA2SServer::HandleRequest(const TArray<uint8> Data, const FIPv4Endpoint& En
 	RemoteAddress->SetPort(Endpoint.Port);
 	if (!bIsValid)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UDP address is invalid <%s:%d>"), *SenderIP, SendPort);
+		UE_LOG(LogTemp, Error, TEXT("UDP address is invalid <%s:%d>"), *SenderIP, Endpoint.Port);
 		return;
 	}
 

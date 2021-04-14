@@ -4,29 +4,41 @@
 
 #include "CoreMinimal.h"
 
-#include "CoreMinimal.h"
+#include "A2SServerSettings.h"
+#include "Object.h"
 #include "Common/UdpSocketBuilder.h"
 #include "Common/UdpSocketReceiver.h"
 #include "Common/UdpSocketSender.h"
 
+#include "A2SServer.generated.h"
+
 DECLARE_LOG_CATEGORY_EXTERN(LogA2S, Log, All);
 
-class FA2SServer
+UCLASS()
+class UA2SServer : public UObject
 {
-public:
-	FA2SServer();
+	GENERATED_BODY()
 
-	~FA2SServer()
-	{
-	};
+public:
+	UA2SServer(){};
+
+	~UA2SServer(){}
 
 	/** Start the A2S server */
+	UFUNCTION(BlueprintCallable, Category = "A2S Server Functions")
 	void Start();
 
 	/** Stop the A2S server */
+	UFUNCTION(BlueprintCallable, Category = "A2S Server Functions")
 	void Stop();
 
+	/** Setting for the A2S server */
+	FA2SServerSettings Settings;
+
 private:
+	/** Parse port options from CLI */
+	void ParseCLIOptions();
+	
 	/** Open a UDP socket for receiving */
 	bool OpenReceiveSocket();
 
@@ -42,15 +54,9 @@ private:
 	/** Handle an A2S query */
 	void HandleRequest(const TArray<uint8> Data, const FIPv4Endpoint& Endpoint);
 
-	int ListenPort = 29001;
-	int SendPort = 39001;
-
 	FSocket* SenderSocket;
 	FSocket* ReceiverSocket;
 	FUdpSocketReceiver* UDPReceiver;
-
-	/** Packet size + some headroom, according to https://developer.valvesoftware.com/wiki/Server_queries#Protocol */
-	int32 BufferSize = 1800 * 2;
 
 	bool IsStarted = false;
 };
