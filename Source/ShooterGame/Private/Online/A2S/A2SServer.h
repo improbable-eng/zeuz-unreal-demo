@@ -20,8 +20,7 @@ class UA2SServer : public UObject
 	GENERATED_BODY()
 
 public:
-	UA2SServer(){};
-
+	UA2SServer();
 	~UA2SServer(){}
 
 	/** Start the A2S server */
@@ -36,27 +35,32 @@ public:
 	FA2SServerSettings Settings;
 
 private:
-	/** Parse port options from CLI */
-	void ParseCLIOptions();
-	
 	/** Open a UDP socket for receiving */
-	bool OpenReceiveSocket();
+	void OpenReceiveSocket();
 
 	/** Open a UDP socket for sending */
-	bool OpenSendSocket();
+	void OpenSendSocket();
 
 	/** Close the UDP socket created by 'OpenSendSocket' */
-	bool CloseReceiveSocket();
+	void CloseReceiveSocket();
 
 	/** Close the UDP socket created by 'OpenReceiveSocket' */
-	bool CloseSendSocket();
+	void CloseSendSocket();
 
 	/** Handle an A2S query */
 	void HandleRequest(const TArray<uint8> Data, const FIPv4Endpoint& Endpoint);
 
+	/** Validate an A2S query */
+	bool IsQueryValid(const TArray<uint8> Data);
+
+	/** Build the raw bytes response to an A2S_INFO request */
+	TArray<uint8> BuildA2SInfoResponse();
+
 	FSocket* SenderSocket;
 	FSocket* ReceiverSocket;
 	FUdpSocketReceiver* UDPReceiver;
+
+	FString PayloadId = TEXT("UNSET-PAYLOAD-ID");
 
 	bool IsStarted = false;
 };

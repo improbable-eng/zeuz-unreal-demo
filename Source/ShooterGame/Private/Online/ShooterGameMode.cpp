@@ -32,9 +32,6 @@ AShooterGameMode::AShooterGameMode(const FObjectInitializer& ObjectInitializer) 
 	bAllowBots = true;	
 	bNeedsBotCreation = true;
 	bUseSeamlessTravel = FParse::Param(FCommandLine::Get(), TEXT("NoSeamlessTravel")) ? false : true;
-
-	A2SServer = NewObject<UA2SServer>();
-	A2SServer->AddToRoot();
 }
 
 void AShooterGameMode::PostInitProperties()
@@ -86,15 +83,16 @@ void AShooterGameMode::PreInitializeComponents()
 void AShooterGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogA2S, Warning, TEXT("In BeginPlay"))
+	A2SServer = NewObject<UA2SServer>(this);
+	A2SServer->AddToRoot();
 	A2SServer->Settings = Settings;
 	A2SServer->Start();
 }
 
 void AShooterGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	UE_LOG(LogA2S, Warning, TEXT("In EndPlay"))
 	A2SServer->Stop();
+	A2SServer->RemoveFromRoot();
 	Super::EndPlay(EndPlayReason);
 }
 
