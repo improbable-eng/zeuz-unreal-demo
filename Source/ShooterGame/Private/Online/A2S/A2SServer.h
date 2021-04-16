@@ -21,7 +21,8 @@ class UA2SServer : public UObject
 
 public:
 	UA2SServer();
-	~UA2SServer(){}
+
+	~UA2SServer() { }
 
 	/** Start the A2S server */
 	UFUNCTION(BlueprintCallable, Category = "A2S Server Functions")
@@ -48,10 +49,10 @@ private:
 	void CloseSendSocket();
 
 	/** Handle an A2S query */
-	void HandleRequest(const TArray<uint8> Data, const FIPv4Endpoint& Endpoint);
+	void HandleRequest(const TArray<uint8>& Data, const FIPv4Endpoint& Endpoint);
 
 	/** Validate an A2S query */
-	bool IsQueryValid(const TArray<uint8> Data);
+	bool IsQueryValid(const TArray<uint8>& Data);
 
 	/** Build the raw bytes response to an A2S_INFO request */
 	TArray<uint8> BuildA2SInfoResponse();
