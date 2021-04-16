@@ -107,17 +107,9 @@ void UA2SServer::HandleRequest(const TArray<uint8> Data, const FIPv4Endpoint& En
 	const FString SenderIP = Endpoint.Address.ToString();
 	TSharedPtr<FInternetAddr> RemoteAddress = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
 
-	bool bIsValid;
-	RemoteAddress->SetIp(*SenderIP, bIsValid);
-	RemoteAddress->SetPort(Endpoint.Port);
-	if (!bIsValid)
-	{
-		UE_LOG(LogA2S, Error, TEXT("UDP address is invalid <%s:%d>"), *SenderIP, Endpoint.Port);
-		return;
-	}
-
+	UE_LOG(LogA2S, Display, TEXT("Responding A2S to %s"), *Endpoint.ToString())
 	int32 BytesSent;
-	SenderSocket->SendTo(ResponseBytes.GetData(), ResponseBytes.Num(), BytesSent, *RemoteAddress);
+	SenderSocket->SendTo(ResponseBytes.GetData(), ResponseBytes.Num(), BytesSent, *Endpoint.ToInternetAddr());
 
 	if (BytesSent != ResponseBytes.Num())
 	{
