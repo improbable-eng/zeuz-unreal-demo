@@ -62,7 +62,7 @@ void UA2SServer::OpenReceiveSocket()
 
 	const FTimespan ThreadWaitTime = FTimespan::FromMilliseconds(100);
 	const FString ThreadName = FString::Printf(TEXT("UDP-RECEIVER-A2S"));
-	UDPReceiver = new FUdpSocketReceiver(ReceiverSocket, ThreadWaitTime, *ThreadName);
+	UDPReceiver = MakeUnique<FUdpSocketReceiver>(ReceiverSocket, ThreadWaitTime, *ThreadName);
 
 	UDPReceiver->OnDataReceived().BindLambda([this](const FArrayReaderPtr& DataPtr, const FIPv4Endpoint& Endpoint)
 	{
@@ -88,7 +88,7 @@ void UA2SServer::OpenSendSocket()
 
 void UA2SServer::CloseReceiveSocket()
 {
-	delete UDPReceiver;
+	UDPReceiver.Reset();
 	UDPReceiver = nullptr;
 
 	ReceiverSocket->Close();
@@ -103,7 +103,7 @@ void UA2SServer::CloseSendSocket()
 	SenderSocket = nullptr;
 }
 
-void UA2SServer::HandleRequest(const TArray<uint8> Data, const FIPv4Endpoint& Endpoint)
+void UA2SServer::HandleRequest(const TArray<uint8>& Data, const FIPv4Endpoint& Endpoint)
 {
 	UE_LOG(LogA2S, Display, TEXT("Handling A2S request from %s"), *Endpoint.ToString());
 

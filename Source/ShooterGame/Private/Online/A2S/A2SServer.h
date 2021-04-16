@@ -59,7 +59,7 @@ private:
 
 	FSocket* SenderSocket;
 	FSocket* ReceiverSocket;
-	FUdpSocketReceiver* UDPReceiver;
+	TUniquePtr<FUdpSocketReceiver> UDPReceiver;
 
 	FString PayloadId = TEXT("UNSET-PAYLOAD-ID");
 
