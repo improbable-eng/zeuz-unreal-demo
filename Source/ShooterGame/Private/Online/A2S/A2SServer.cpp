@@ -41,7 +41,7 @@ void UA2SServer::Start()
 
 void UA2SServer::Stop()
 {
-	// FScopeLock ScopeLock(&HandleLock);
+	FScopeLock ScopeLock(&Mutex);
 	UDPReceiver->Stop();
 
 	CloseReceiveSocket();
@@ -70,7 +70,7 @@ void UA2SServer::OpenReceiveSocket()
 		Data.AddUninitialized(DataPtr->TotalSize());
 		DataPtr->Serialize(Data.GetData(), DataPtr->TotalSize());
 
-		// FScopeLock ScopeLock(&HandleLock);
+		FScopeLock ScopeLock(&Mutex);
 		this->HandleRequest(Data, Endpoint);
 	});
 }

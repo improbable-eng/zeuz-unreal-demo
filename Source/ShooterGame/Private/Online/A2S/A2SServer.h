@@ -64,4 +64,6 @@ private:
 	FString PayloadId = TEXT("UNSET-PAYLOAD-ID");
 
 	bool IsStarted = false;
+
+	FCriticalSection Mutex;
 };
