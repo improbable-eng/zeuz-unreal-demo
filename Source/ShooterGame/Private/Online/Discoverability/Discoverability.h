@@ -27,7 +27,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Discoverability Functions")
 	void Stop();
 
-	/** Setting for the A2S server */
+	/** Settings for the discoverability component */
 	FDiscoverabilitySettings Settings;
 
 private:
