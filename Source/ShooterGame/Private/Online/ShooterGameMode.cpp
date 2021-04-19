@@ -80,6 +80,22 @@ void AShooterGameMode::PreInitializeComponents()
 	GetWorldTimerManager().SetTimer(TimerHandle_DefaultTimer, this, &AShooterGameMode::DefaultTimer, GetWorldSettings()->GetEffectiveTimeDilation(), true);
 }
 
+void AShooterGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	A2SServer = NewObject<UA2SServer>(this);
+	A2SServer->AddToRoot();
+	A2SServer->Settings = Settings;
+	A2SServer->Start();
+}
+
+void AShooterGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	A2SServer->Stop();
+	A2SServer->RemoveFromRoot();
+	Super::EndPlay(EndPlayReason);
+}
+
 void AShooterGameMode::DefaultTimer()
 {
 	// don't update timers for Play In Editor mode, it's not real match

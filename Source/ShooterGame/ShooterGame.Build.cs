@@ -16,6 +16,7 @@ public class ShooterGame : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[] { 
 				"ShooterGame/Private",
+				"ShooterGame/Private/Online",
 				"ShooterGame/Private/UI",
 				"ShooterGame/Private/UI/Menu",
 				"ShooterGame/Private/UI/Style",
@@ -49,7 +50,9 @@ public class ShooterGame : ModuleRules
 				"ReplicationGraph",
 				"PakFile",
 				"RHI",
-				"PhysicsCore"
+				"PhysicsCore",
+				"Networking",
+				"Sockets"
 			}
 		);
 
