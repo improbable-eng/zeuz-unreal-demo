@@ -52,7 +52,9 @@ public class ShooterGame : ModuleRules
 				"RHI",
 				"PhysicsCore",
 				"Networking",
-				"Sockets"
+				"Sockets",
+				"Http",
+				"Json"
 			}
 		);
 
