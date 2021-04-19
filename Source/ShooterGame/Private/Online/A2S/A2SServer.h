@@ -65,5 +65,6 @@ private:
 
 	bool IsStarted = false;
 
+	/** Mutex to ensure the server isn't cleaned up whilst handling a request */
 	FCriticalSection Mutex;
 };
