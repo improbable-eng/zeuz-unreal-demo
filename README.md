@@ -1,6 +1,7 @@
 # zeuz-unreal-demo
 An adaptation of the Unreal Engine [ShooterGame](https://docs.unrealengine.com/en-US/Resources/SampleGames/ShooterGame/index.html) example game project to demonstrate how to support [_zeuz_](https://zeuz.io/) orchestration.
 
+
 ## Base Game Hosting
 Without any changes, the base ShooterGame project can be built and published to zeuz. The payload command for this is:
 ```
@@ -11,11 +12,12 @@ binaryexecpath=/opt/zeuz/gameserver/ShooterServer.sh
 execargs=/Game/Maps/Highrise -log -PORT=${servicePort:PortName} -NOSTEAM
 ```
 
+
 ## Basic zeuz Support
 [Code changes.](https://github.com/improbable/zeuz-unreal-demo/pull/3)
 
 To support [automatic payload release](https://doc.zeuz.io/docs/payload-definition#automatic-payload-release), your game server executable should terminate at the end of the match. 
-For this project, this is controlled in the [game mode (`ShooterGameMode`)](Source/ShooterGame/Private/Online/ShooterGameMode.cpp) by sending an RPC to clients to return to the main menu and then exiting the game server when all clients are disconnected (see `ShooterGameMode::DefaultTimer`).
+For this project, this is controlled in the [game mode (`ShooterGameMode`)](Source/ShooterGame/Private/Online/ShooterGameMode.cpp) by sending an RPC to clients to return to the main menu and then exiting the game server when all clients are disconnected (see [`ShooterGameMode::DefaultTimer`](Source/ShooterGame/Private/Online/ShooterGameMode.cpp)).
 
 Once the code changes are implemented, the payload command needs to be updated with an API key, so that the payload can automatically be unreserved:
 ```
@@ -28,6 +30,7 @@ apikey=<API_KEY>
 apisecret=<API_KEY_PASSWORD>
 apiendpoint=https://zcp.zeuz.io/api/v1
 ```
+
 
 ## CCU Tracking (A2S Protocol)
 [Code changes.](https://github.com/improbable/zeuz-unreal-demo/pull/4)
@@ -57,3 +60,34 @@ payloadId=${payloadID}
 ```
 In addition to `${statsPort}` being used in the `execargs`, the payload ID (accessible through `${payloadId}`) is used as the server name.
 This is not crucial for zeuz to track CCUs, but useful if you wish to track CCUs per payload for your own queries.
+
+
+## Server Readiness
+[Code changes.](https://github.com/improbable/zeuz-unreal-demo/pull/5)
+
+A payload being ready doesn't mean that the game server running on it is ready to accept connections from players.
+To overcome this, the game server has a [`Discoverability` component](Source/ShooterGame/Private/Online/Discoverability/Discoverability.h) which `POST`s to a matchmaker service ([description below](#the-matchmaker)) to indicate that it is ready to accept connections.
+
+Similarly to the [A2S server](#ccu-tracking-a2s-protocol), this component is created by the [game mode (`ShooterGameMode`)](Source/ShooterGame/Private/Online/ShooterGameMode.cpp) and is started during the `BeginPlay` event.
+However, when the match state is `WaitingPostMatch`, we do not wish to have any more players connect to the game server, so the updates are stopped (see [`ShooterGameMode::DefaultTimer`](Source/ShooterGame/Private/Online/ShooterGameMode.cpp)).
+There will be a short time between the last update sent to the matchmaker and the matchmaker labelling the game server as stale, in which the matchmaker may still route clients to the game server.
+If a player connects in this case, they will see the end of game scoreboard and then disconnect gracefully, like any other player. 
+
+### The Matchmaker
+Any matchmaker used alongside zeuz and this game server needs to support two endpoints:
+- `GET /v1/gameservers`: Get a list of game servers on zeuz payloads. 
+- `POST /v1/gameservers/<PAYLOAD ID>`: Add a payload to the collection of ready game servers.
+    - The body for this `POST` request is as follows (filled with example data):
+    ```json
+    {
+      "ccu": 12,
+      "ip": "123.45.67.89",
+      "port": 29000
+    }
+    ```
+
+The matchmaker expects periodic updates from the game server indicating that it is accepting client connections. 
+If it does not receive any updates from a game server after a set interval, it marks the game server as stale and no longer routes clients to it.
+Clients can query the matchmaker for available game servers.
+
+For this example, the matchmaker used can be found [here](https://github.com/improbable/zeuz-demo).
