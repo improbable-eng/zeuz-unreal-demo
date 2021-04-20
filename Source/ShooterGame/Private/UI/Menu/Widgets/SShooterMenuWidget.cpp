@@ -33,7 +33,7 @@ void SShooterMenuWidget::Construct(const FArguments& InArgs)
 	Visibility.Bind(this, &SShooterMenuWidget::GetSlateVisibility);
 	FLinearColor MenuTitleTextColor =  FLinearColor(FColor(155,164,182));
 	MenuHeaderHeight = 62.0f;
-	MenuHeaderWidth = 287.0f;
+	MenuHeaderWidth = 325.0f;
 
 	// Calculate the size of the profile box based on the string it'll contain (+ padding)
 	const FText PlayerName = PlayerOwner.IsValid() ? FText::FromString(PlayerOwner->GetNickname()) : FText::GetEmpty();

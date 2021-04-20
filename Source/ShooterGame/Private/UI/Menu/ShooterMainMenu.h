@@ -9,6 +9,7 @@
 #include "Widgets/SShooterLeaderboard.h"
 #include "Widgets/SShooterOnlineStore.h"
 #include "Widgets/SShooterSplitScreenLobbyWidget.h"
+#include "Widgets/SShooterDirectConnect.h"
 #include "ShooterOptions.h"
 
 
@@ -90,6 +91,9 @@ protected:
 
 	/** online store widget */
 	TSharedPtr<class SShooterOnlineStore> OnlineStoreWidget;
+	
+	/** The edit text widget. */
+	TSharedPtr<class SShooterDirectConnect> DirectConnectWidget;
 
 	/** custom menu */
 	TSharedPtr<class FShooterMenuItem> JoinServerItem;
@@ -99,6 +103,9 @@ protected:
 
 	/** yet another custom menu */
 	TSharedPtr<class FShooterMenuItem> OnlineStoreItem;
+
+	/** custom menu item for direct connecting */
+	TSharedPtr<class FShooterMenuItem> DirectConnectItem;
 
 	/** Custom demo browser menu */
 	TSharedPtr<class FShooterMenuItem> DemoBrowserItem;
@@ -218,6 +225,9 @@ protected:
 
 	/** Show leaderboard */
 	void OnShowLeaderboard();
+
+	/** Show direct connect menu */
+	void OnShowDirectConnect();
 
 	/** Show online store */
 	void OnShowOnlineStore();

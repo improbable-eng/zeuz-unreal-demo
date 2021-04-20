@@ -328,6 +328,10 @@ void FShooterMainMenu::Construct(TWeakObjectPtr<UShooterGameInstance> _GameInsta
 
 		// Server list widget that will be called up if appropriate
 		MenuHelper::AddCustomMenuItem(JoinServerItem,SAssignNew(ServerListWidget,SShooterServerList).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
+
+		// Direct Connect
+		MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("DirectConnect", "DIRECT CONNECT"), this, &FShooterMainMenu::OnShowDirectConnect);
+		MenuHelper::AddCustomMenuItem(DirectConnectItem,SAssignNew(DirectConnectWidget,SShooterDirectConnect).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
 #endif
 
 		// Leaderboards
@@ -1325,6 +1329,12 @@ void FShooterMainMenu::OnShowLeaderboard()
 #else
 	LeaderboardWidget->ReadStats();
 #endif
+	MenuWidget->EnterSubMenu();
+}
+
+void FShooterMainMenu::OnShowDirectConnect()
+{
+	MenuWidget->NextMenu = DirectConnectItem->SubMenu;
 	MenuWidget->EnterSubMenu();
 }
 
