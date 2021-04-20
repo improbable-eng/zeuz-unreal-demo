@@ -64,12 +64,12 @@ void UDiscoverability::ParseCLIOptions()
 
 	if (!FParse::Value(FCommandLine::Get(), TEXT("payloadId"), PayloadId))
 	{
-		UE_LOG(LogA2S, Display, TEXT("No payload ID given in CLI (-payloadId), defaulting to %s"), *PayloadId);
+		UE_LOG(LogDiscoverability, Display, TEXT("No payload ID given in CLI (-payloadId), defaulting to %s"), *PayloadId);
 	}
 
 	if (!FParse::Value(FCommandLine::Get(), TEXT("payloadIp"), PayloadIp))
 	{
-		UE_LOG(LogA2S, Display, TEXT("No payload IP given in CLI (-payloadIp), defaulting to %s"), *PayloadIp);
+		UE_LOG(LogDiscoverability, Display, TEXT("No payload IP given in CLI (-payloadIp), defaulting to %s"), *PayloadIp);
 	}
 }
 
