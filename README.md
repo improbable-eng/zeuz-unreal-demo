@@ -115,3 +115,9 @@ If it does not receive any updates from a game server after a set interval, it m
 Clients can query the matchmaker for available game servers.
 
 For this example, the matchmaker used can be found [here](https://github.com/improbable/zeuz-demo).
+
+
+## Direct Connecting UI
+Whilst not necessary for supporting zeuz orchestration, the base Shooter Game example UI has been extended to allow users to enter a server IP and port to connect to.
+
+There is a new [`DirectConnect` widget](Source/ShooterGame/Private/UI/Menu/Widgets/SShooterDirectConnect.cpp) that is added to the [main menu](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp).
