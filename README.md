@@ -70,7 +70,7 @@ To overcome this, the game server has a [`Discoverability` component](Source/Sho
 
 Similarly to the [A2S server](#ccu-tracking-a2s-protocol), this component is created by the [game mode (`ShooterGameMode`)](Source/ShooterGame/Private/Online/ShooterGameMode.cpp) and is started during the `BeginPlay` event.
 However, when the match state is `WaitingPostMatch`, we do not wish to have any more players connect to the game server, so the updates are stopped (see [`ShooterGameMode::DefaultTimer`](Source/ShooterGame/Private/Online/ShooterGameMode.cpp)).
-There will be a short time between the last update sent to the matchmaker and the matchmaker labelling the game server as stale, in which the matchmaker may still route clients to the game server.
+There will be a short time between the last update sent to the matchmaker and the matchmaker labelling the game server as 'not ready', in which the matchmaker may still route clients to the game server.
 If a player connects in this case, they will see the end of game scoreboard and then disconnect gracefully, like any other player. 
 
 ### The Matchmaker
@@ -80,14 +80,14 @@ Any matchmaker used alongside zeuz and this game server needs to support two end
     - The body for this `POST` request is as follows (filled with example data):
     ```json
     {
-      "ccu": 12,
-      "ip": "123.45.67.89",
-      "port": 29000
+      "Ccu": 12,
+      "IP": "123.45.67.89",
+      "Port": 29000
     }
     ```
 
-The matchmaker expects periodic updates from the game server indicating that it is accepting client connections. 
-If it does not receive any updates from a game server after a set interval, it marks the game server as stale and no longer routes clients to it.
+The matchmaker expects periodic updates from the game server indicating that it is accepting client connections ('ready').
+If it does not receive any updates from a game server after a set interval, it marks the game server as 'not ready' and no longer routes clients to it.
 Clients can query the matchmaker for available game servers.
 
 For this example, the matchmaker used can be found [here](https://github.com/improbable/zeuz-demo).

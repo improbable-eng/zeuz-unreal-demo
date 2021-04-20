@@ -74,9 +74,9 @@ void UDiscoverability::SendUpdate()
 	}
 
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
-	JsonObject->SetNumberField(TEXT("ccu"), World->GetAuthGameMode()->GetNumPlayers());
-	JsonObject->SetStringField(TEXT("ip"), PayloadIp);
-	JsonObject->SetNumberField(TEXT("port"), World->URL.Port);
+	JsonObject->SetNumberField(TEXT("Ccu"), World->GetAuthGameMode()->GetNumPlayers());
+	JsonObject->SetStringField(TEXT("IP"), PayloadIp);
+	JsonObject->SetNumberField(TEXT("Port"), World->URL.Port);
 
 	FString Body;
 	const TSharedRef<TJsonWriter<TCHAR>> JsonWriter = TJsonWriterFactory<>::Create(&Body);

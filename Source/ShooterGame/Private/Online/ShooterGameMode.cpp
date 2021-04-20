@@ -137,8 +137,8 @@ void AShooterGameMode::DefaultTimer()
 
 				// Stop discoverability as the game is ending
 				// Note: During the time between the last update from the game server and the matchmaker marking the
-				// game server as stale (after no update is received from game server), the player may still connect to
-				// the server game (which is in post-match) but this is handled gracefully
+				// game server as 'not ready' (after no update is received from game server after N seconds), the player
+				// may still connect to the game server (which is in post-match) but this is handled gracefully.
 				Discoverability->Stop();
 			}
 			else if (GetMatchState() == MatchState::InProgress)
