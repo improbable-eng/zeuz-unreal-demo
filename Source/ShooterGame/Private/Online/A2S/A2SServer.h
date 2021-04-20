@@ -32,7 +32,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "A2S Server Functions")
 	void Stop();
 
-	/** Setting for the A2S server */
+	/** Settings for the A2S server */
 	FA2SServerSettings Settings;
 
 private:

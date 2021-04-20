@@ -5,7 +5,9 @@
 #include "OnlineIdentityInterface.h"
 #include "ShooterPlayerController.h"
 #include "A2S/A2SServer.h"
-
+#include "A2S/A2SServerSettings.h"
+#include "Discoverability/Discoverability.h"
+#include "Discoverability/DiscoverabilitySettings.h"
 #include "ShooterGameMode.generated.h"
 
 class AShooterAIController;
@@ -131,7 +133,12 @@ protected:
 	UA2SServer* A2SServer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FA2SServerSettings Settings;
+	FA2SServerSettings A2SSettings;
+
+	UDiscoverability* Discoverability;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FDiscoverabilitySettings DiscoverabilitySettings;
 
 	/** spawning all bots for this game */
 	void StartBots();

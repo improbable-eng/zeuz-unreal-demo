@@ -83,16 +83,25 @@ void AShooterGameMode::PreInitializeComponents()
 void AShooterGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
 	A2SServer = NewObject<UA2SServer>(this);
 	A2SServer->AddToRoot();
-	A2SServer->Settings = Settings;
+	A2SServer->Settings = A2SSettings;
 	A2SServer->Start();
+
+	Discoverability = NewObject<UDiscoverability>(this);
+	Discoverability->AddToRoot();
+	Discoverability->Settings = DiscoverabilitySettings;
+	Discoverability->Start();
 }
 
 void AShooterGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	A2SServer->Stop();
 	A2SServer->RemoveFromRoot();
+
+	Discoverability->RemoveFromRoot();
+
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -125,6 +134,12 @@ void AShooterGameMode::DefaultTimer()
 					AShooterPlayerController* ShooterPlayerController = Cast<AShooterPlayerController>(*It);
 					ShooterPlayerController->HandleReturnToMainMenu();
 				}
+
+				// Stop discoverability as the game is ending
+				// Note: During the time between the last update from the game server and the matchmaker marking the
+				// game server as 'not ready' (after no update is received from game server after N seconds), the player
+				// may still connect to the game server (which is in post-match) but this is handled gracefully.
+				Discoverability->Stop();
 			}
 			else if (GetMatchState() == MatchState::InProgress)
 			{
