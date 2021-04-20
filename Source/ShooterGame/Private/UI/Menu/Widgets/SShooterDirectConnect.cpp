@@ -59,7 +59,12 @@ FReply SShooterDirectConnect::OnConnectClicked()
 	APlayerController* PlayerController = PlayerOwner->PlayerController;
 	if (PlayerController)
 	{
-		PlayerController->ConsoleCommand(FString("open ").Append(Address));
+		if (GEngine && GEngine->GameViewport)
+		{
+			GEngine->GameViewport->RemoveAllViewportWidgets();
+		}
+
+		PlayerController->ClientTravel(Address, TRAVEL_Absolute);
 	}
 
 	return FReply::Handled();
