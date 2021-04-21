@@ -15,36 +15,36 @@ void SShooterDirectConnect::Construct(const FArguments& InArgs)
 	const FMargin ButtonPadding = FMargin(10.f);
 
 	ChildSlot
-		.VAlign(VAlign_Fill)
-		.HAlign(HAlign_Fill)
+	.VAlign(VAlign_Fill)
+	.HAlign(HAlign_Fill)
+	[
+		SNew(SVerticalBox)
+
+		// Address text box
+		+ SVerticalBox::Slot()
+		.AutoHeight()
 		[
-			SNew(SVerticalBox)
+			SAssignNew(AddressEditBox, SEditableTextBox)
+		    .MinDesiredWidth(350.f)
+         	.ClearKeyboardFocusOnCommit(false)
+         	.HintText(NSLOCTEXT("DCWidget", "EnterAddress", "Enter server address with port..."))
+         	.Font(TextEnterFont)
+		]
 
-			// Address text box
-			+ SVerticalBox::Slot()
-			.AutoHeight()
+		// Connect button
+		+ SVerticalBox::Slot()
+		.Padding(ButtonPadding)
+		[
+			SNew(SButton)
+			.OnClicked(this, &SShooterDirectConnect::OnConnectClicked)
 			[
-				SAssignNew(AddressEditBox, SEditableTextBox)
-			    .MinDesiredWidth(350.f)
-         		.ClearKeyboardFocusOnCommit(false)
-         		.HintText(NSLOCTEXT("DCWidget", "EnterAddress", "Enter server address with port..."))
-         		.Font(TextEnterFont)
+				SNew(STextBlock)
+        		.Text(NSLOCTEXT("DCWidget", "Connect", "CONNECT"))
+        		.Font(ButtonFont)
+        		.Justification(ETextJustify::Center)
 			]
-
-			// Connect button
-			+ SVerticalBox::Slot()
-			.Padding(ButtonPadding)
-			[
-				SNew(SButton)
-				.OnClicked(this, &SShooterDirectConnect::OnConnectClicked)
-				[
-					SNew(STextBlock)
-        			.Text(NSLOCTEXT("DCWidget", "Connect", "CONNECT"))
-        			.Font(ButtonFont)
-        			.Justification(ETextJustify::Center)
-				]
-			]
-		];
+		]
+	];
 }
 
 FReply SShooterDirectConnect::OnConnectClicked()
