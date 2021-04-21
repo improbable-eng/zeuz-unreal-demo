@@ -7,10 +7,11 @@ void SShooterDirectConnect::Construct(const FArguments& InArgs)
 	PlayerOwner = InArgs._PlayerOwner;
 	OwnerWidget = InArgs._OwnerWidget;
 
-	const FSlateFontInfo PlayerNameFontInfo = FShooterStyle::Get().GetFontStyle("ShooterGame.MenuProfileNameStyle");
-	FSlateFontInfo ChatFont = FShooterStyle::Get().GetFontStyle("ShooterGame.ChatFont");
-	ChatFont.Size = 18;
+	FSlateFontInfo TextEnterFont = FShooterStyle::Get().GetFontStyle("ShooterGame.ChatFont");
+	TextEnterFont.Size = 14;
 
+	FSlateFontInfo ButtonFont = FShooterStyle::Get().GetFontStyle("ShooterGame.MenuTextStyle");
+	ButtonFont.Size = 18;
 	const FMargin ButtonPadding = FMargin(10.f);
 
 	ChildSlot
@@ -27,7 +28,7 @@ void SShooterDirectConnect::Construct(const FArguments& InArgs)
 			    .MinDesiredWidth(350.f)
          		.ClearKeyboardFocusOnCommit(false)
          		.HintText(NSLOCTEXT("DCWidget", "EnterAddress", "Enter server address with port..."))
-         		.Font(ChatFont)
+         		.Font(TextEnterFont)
 			]
 
 			// Connect button
@@ -38,8 +39,8 @@ void SShooterDirectConnect::Construct(const FArguments& InArgs)
 				.OnClicked(this, &SShooterDirectConnect::OnConnectClicked)
 				[
 					SNew(STextBlock)
-        			.Font(PlayerNameFontInfo)
         			.Text(NSLOCTEXT("DCWidget", "Connect", "CONNECT"))
+        			.Font(ButtonFont)
         			.Justification(ETextJustify::Center)
 				]
 			]
