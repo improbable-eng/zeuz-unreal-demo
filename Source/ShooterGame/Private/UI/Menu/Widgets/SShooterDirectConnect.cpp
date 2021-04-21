@@ -26,9 +26,9 @@ void SShooterDirectConnect::Construct(const FArguments& InArgs)
 		[
 			SAssignNew(AddressEditBox, SEditableTextBox)
 		    .MinDesiredWidth(350.f)
-         	.ClearKeyboardFocusOnCommit(false)
-         	.HintText(NSLOCTEXT("DCWidget", "EnterAddress", "Enter server address with port..."))
-         	.Font(TextEnterFont)
+		    .ClearKeyboardFocusOnCommit(false)
+		    .HintText(NSLOCTEXT("DCWidget", "EnterAddress", "Enter server address with port..."))
+		    .Font(TextEnterFont)
 		]
 
 		// Connect button
@@ -39,9 +39,9 @@ void SShooterDirectConnect::Construct(const FArguments& InArgs)
 			.OnClicked(this, &SShooterDirectConnect::OnConnectClicked)
 			[
 				SNew(STextBlock)
-        		.Text(NSLOCTEXT("DCWidget", "Connect", "CONNECT"))
-        		.Font(ButtonFont)
-        		.Justification(ETextJustify::Center)
+				.Text(NSLOCTEXT("DCWidget", "Connect", "CONNECT"))
+				.Font(ButtonFont)
+				.Justification(ETextJustify::Center)
 			]
 		]
 	];
