@@ -1768,6 +1768,14 @@ void UShooterGameInstance::TravelToSession(const FName& SessionName)
 	InternalTravelToSession(SessionName);
 }
 
+void UShooterGameInstance::DirectConnectToSession(const FString& Address)
+{
+	AddNetworkFailureHandlers();
+	ShowLoadingScreen();
+	GotoState(ShooterGameInstanceState::Playing);
+	GetPrimaryPlayerController()->ClientTravel(Address, TRAVEL_Absolute);
+}
+
 void UShooterGameInstance::SetIgnorePairingChangeForControllerId( const int32 ControllerId )
 {
 	IgnorePairingChangeForControllerId = ControllerId;

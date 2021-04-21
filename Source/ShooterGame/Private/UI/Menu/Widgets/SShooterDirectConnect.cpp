@@ -64,7 +64,8 @@ FReply SShooterDirectConnect::OnConnectClicked()
 			GEngine->GameViewport->RemoveAllViewportWidgets();
 		}
 
-		PlayerController->ClientTravel(Address, TRAVEL_Absolute);
+		UShooterGameInstance* ShooterGameInstance = Cast<UShooterGameInstance>(PlayerController->GetGameInstance());
+		ShooterGameInstance->DirectConnectToSession(Address);
 	}
 
 	return FReply::Handled();
