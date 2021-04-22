@@ -9,6 +9,7 @@
 #include "SlateBasics.h"
 #include "SlateExtras.h"
 #include "GenericPlatformChunkInstall.h"
+#include "IHttpResponse.h"
 #include "Online/ShooterOnlineGameSettings.h"
 #include "OnlineSubsystemSessionSettings.h"
 #include "SShooterConfirmationDialog.h"
@@ -297,6 +298,7 @@ void FShooterMainMenu::Construct(TWeakObjectPtr<UShooterGameInstance> _GameInsta
 
 #else
 		TSharedPtr<FShooterMenuItem> MenuItem;
+		/* Options disabled for zeuz/Unreal demo
 		// HOST menu option
 		MenuItem = MenuHelper::AddMenuItem(RootMenuItem, LOCTEXT("Host", "HOST"));
 
@@ -314,10 +316,12 @@ void FShooterMainMenu::Construct(TWeakObjectPtr<UShooterGameInstance> _GameInsta
 
 		RecordDemoItem = MenuHelper::AddMenuOptionSP(MenuItem, LOCTEXT("RecordDemo", "Record Demo"), OnOffList, this, &FShooterMainMenu::RecordDemoChanged);
 		RecordDemoItem->SelectedMultiChoice = bIsRecordingDemo;
+		*/
 
 		// JOIN menu option
-		MenuItem = MenuHelper::AddMenuItem(RootMenuItem, LOCTEXT("Join", "JOIN"));
+		MenuItem = MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Join", "JOIN"), this, &FShooterMainMenu::OnJoinClicked);
 
+		/* Options disabled for zeuz/Unreal demo
 		// submenu under "join"
 		MenuHelper::AddMenuItemSP(MenuItem, LOCTEXT("Server", "SERVER"), this, &FShooterMainMenu::OnJoinServer);
 		JoinLANItem = MenuHelper::AddMenuOptionSP(MenuItem, LOCTEXT("LanMatch", "LAN"), OnOffList, this, &FShooterMainMenu::LanMatchChanged);
@@ -328,28 +332,35 @@ void FShooterMainMenu::Construct(TWeakObjectPtr<UShooterGameInstance> _GameInsta
 
 		// Server list widget that will be called up if appropriate
 		MenuHelper::AddCustomMenuItem(JoinServerItem,SAssignNew(ServerListWidget,SShooterServerList).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
+		*/
 
 		// Direct Connect
 		MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("DirectConnect", "DIRECT CONNECT"), this, &FShooterMainMenu::OnShowDirectConnect);
 		MenuHelper::AddCustomMenuItem(DirectConnectItem,SAssignNew(DirectConnectWidget,SShooterDirectConnect).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
 #endif
 
+		/* Options disabled for zeuz/Unreal demo
 		// Leaderboards
 		MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Leaderboards", "LEADERBOARDS"), this, &FShooterMainMenu::OnShowLeaderboard);
 		MenuHelper::AddCustomMenuItem(LeaderboardItem,SAssignNew(LeaderboardWidget,SShooterLeaderboard).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
+		*/
 
 #if ONLINE_STORE_ENABLED
+		/* Options disabled for zeuz/Unreal demo
 		// Purchases
 		MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Store", "ONLINE STORE"), this, &FShooterMainMenu::OnShowOnlineStore);
 		MenuHelper::AddCustomMenuItem(OnlineStoreItem, SAssignNew(OnlineStoreWidget, SShooterOnlineStore).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
+		*/
 #endif //ONLINE_STORE_ENABLED
 #if !SHOOTER_CONSOLE_UI
 
+		/* Options disabled for zeuz/Unreal demo
 		// Demos
 		{
 			MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Demos", "DEMOS"), this, &FShooterMainMenu::OnShowDemoBrowser);
 			MenuHelper::AddCustomMenuItem(DemoBrowserItem,SAssignNew(DemoListWidget,SShooterDemoList).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
 		}
+		*/
 #endif
 
 		// Options
@@ -1255,6 +1266,63 @@ void FShooterMainMenu::OnJoinServer()
 #endif
 
 	StartOnlinePrivilegeTask(IOnlineIdentity::FOnGetUserPrivilegeCompleteDelegate::CreateSP(this, &FShooterMainMenu::OnUserCanPlayOnlineJoin));
+}
+
+void FShooterMainMenu::OnJoinClicked()
+{
+	const FString MatchmakerEndpoint = TEXT("http://35.236.127.144:29000/v1/gameservers");
+	UE_LOG(LogOnline, Display, TEXT("Fetching server to join from matchmaker at %s"), *MatchmakerEndpoint);
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FHttpModule::Get().CreateRequest();
+	Request->SetURL(MatchmakerEndpoint);
+	Request->SetVerb("GET");
+	Request->SetHeader("Content-Type", TEXT("application/json"));
+
+	// Add callback to join the server if the fetch was a success
+	Request->OnProcessRequestComplete().BindLambda([&](FHttpRequestPtr _, FHttpResponsePtr Response, bool bSuccessful)
+	{
+		if (!bSuccessful || !Response.IsValid())
+		{
+			UE_LOG(LogOnline, Warning, TEXT("Posting to matchmaker failed"));
+			return;
+		}
+
+		const int32 ResponseCode = Response->GetResponseCode();
+		if (ResponseCode < 200 || ResponseCode >= 300)
+		{
+			UE_LOG(LogOnline, Warning, TEXT("Posting to matchmaker failed with error code %d (message: %s)"),
+			       ResponseCode, *Response->GetContentAsString());
+			return;
+		}
+
+		TSharedPtr<FJsonObject> JsonObject;
+		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Response->GetContentAsString());
+		if (FJsonSerializer::Deserialize(Reader, JsonObject))
+		{
+			const FString IP = JsonObject->GetStringField("IP");
+			const int Port = JsonObject->GetIntegerField("Port");
+			const FString Address = FString::Printf(TEXT("%s:%d"), *IP, Port);
+
+			APlayerController* PlayerController = PlayerOwner->PlayerController;
+			if (PlayerController)
+			{
+				if (GEngine && GEngine->GameViewport)
+				{
+					GEngine->GameViewport->RemoveAllViewportWidgets();
+				}
+
+				UShooterGameInstance* GameInstance = Cast<UShooterGameInstance>(PlayerController->GetGameInstance());
+				GameInstance->DirectConnectToSession(Address);
+			}
+		}
+		else
+		{
+			UE_LOG(LogOnline, Warning, TEXT("Could not deserialise JSON (raw: %s)"),
+			       *Response->GetContentAsString());
+		}
+	});
+
+	Request->ProcessRequest();
 }
 
 void FShooterMainMenu::OnUserCanPlayOnlineJoin(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, uint32 PrivilegeResults)

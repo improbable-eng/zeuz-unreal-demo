@@ -55,7 +55,7 @@ FReply SShooterDirectConnect::OnConnectClicked()
 	}
 
 	const FString Address = AddressEditBox->GetText().ToString();
-	UE_LOG(LogTemp, Warning, TEXT("Direct connecting to %s"), *Address);
+	UE_LOG(LogOnline, Display, TEXT("Direct connecting to %s"), *Address);
 
 	APlayerController* PlayerController = PlayerOwner->PlayerController;
 	if (PlayerController)

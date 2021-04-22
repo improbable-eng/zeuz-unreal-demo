@@ -223,6 +223,9 @@ protected:
 	/** Join server */
 	void OnJoinServer();
 
+	/** When the 'Join' button is clicked, fetch a sever from the matchmaker and connect to it */
+	void OnJoinClicked();
+
 	/** Show leaderboard */
 	void OnShowLeaderboard();
 
