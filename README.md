@@ -20,7 +20,7 @@ execargs=/Game/Maps/Highrise -log -NOSTEAM -PORT=${servicePort:PortName}
 The execution flags specify:
 - The map to launch (`/Game/Maps/Highrise`).
 - Enable logging (`-log`).
-- Disable Steam/Game/Maps/Highrise (`-NOSTEAM`).
+- Disable Steam (`-NOSTEAM`).
 - The port to host on (`-PORT=${servicePort:PortName}`).
     - This makes use of the port variable zeuz makes available to you.
 
