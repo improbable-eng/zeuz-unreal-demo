@@ -7,6 +7,9 @@ Before you follow this example, there are a couple of general points to note:
 - Unreal handles its internal command line arguments differently to custom ones. Read the payload commands in each section carefully for the correct use.
     - Internal flag values are assigned to a flag with an `=` between the flag key and value (e.g. `-PORT=29000`).
     - Custom flag values are assigned to a flag with a space between the flag key and value (e.g. `-payloadId my-payload-id-123`).
+ - The menu of the original ShooterGame project has been modified to reflect the connections available when this game is used with zeuz and a matchmaker. For more information, see the [UI Changes section](#ui-changes).
+    - Note: These UI changes are **not** necessary to make your game support zeuz orchestration.
+
 
 ## Base Game Hosting
 Without any changes, the base ShooterGame project can be built and published to zeuz. The payload command for this is:
@@ -99,9 +102,17 @@ apiendpoint=https://zcp.zeuz.io/api/v1
 
 ### The Matchmaker
 Any matchmaker used alongside zeuz and this game server needs to support two endpoints:
-- `GET /v1/gameservers`: Get a list of game servers on zeuz payloads. 
+- `GET /v1/gameservers`: Request a game server IP and port.
+    - The matchmaker uses zeuz to find and, if necessary, reserve a payload for the player to connect to. 
+      - The body for the `GET` response is as follows (filled with example data):
+      ```json
+      {
+        "IP": "123.45.67.89",
+        "Port": 29000
+      }
+      ```
 - `POST /v1/gameservers/<PAYLOAD ID>`: Add a payload to the collection of ready game servers.
-    - The body for this `POST` request is as follows (filled with example data):
+    - The body for the `POST` request is as follows (filled with example data):
     ```json
     {
       "Ccu": 12,
@@ -114,10 +125,22 @@ The matchmaker expects periodic updates from the game server indicating that it 
 If it does not receive any updates from a game server after a set interval, it marks the game server as 'not ready' and no longer routes clients to it.
 Clients can query the matchmaker for available game servers.
 
+The matchmaker is also used to allow players to find a server to play on, using the `GET /v1/gameservers` endpoint, see the [UI Changes section](#ui-changes).
+
 For this example, the matchmaker used can be found [here](https://github.com/improbable/zeuz-demo).
 
 
-## Direct Connecting UI
-Whilst not necessary for supporting zeuz orchestration, the base Shooter Game example UI has been extended to allow users to enter a server IP and port to connect to.
+## UI Changes
+Whilst not necessary for supporting zeuz orchestration, the base ShooterGame example UI has been modified to allow players to connect to zeuz-hosted game servers.
+These options are 'JOIN' and 'DIRECT CONNECT'.
+Unsupported options for 'HOST', 'LEADERBOARDS', 'ONLINE STORE' and 'DEMOS' have been removed from the menu, but their source code still exists.
 
-There is a new [`DirectConnect` widget](Source/ShooterGame/Private/UI/Menu/Widgets/SShooterDirectConnect.cpp) that is added to the [main menu](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp).
+### JOIN
+If a matchmaker is set up (see [The Matchmaker](#the-matchmaker)), clicking 'JOIN' will query the matchmaker for a game server and connect to it.
+
+A simple button is added to the [`MainMenu` component](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp) and a HTTP GET request (see [FShooterMainMenu::OnJoinClicked](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp)) is made to the matchmaker when it is clicked.
+
+### DIRECT CONNECT
+If you know the IP and port of the game server you wish to connect to, you can enter it in the text box that shows when 'DIRECT CONNECT' is chosen from the main menu.
+
+This is a new [`DirectConnect` widget](Source/ShooterGame/Private/UI/Menu/Widgets/SShooterDirectConnect.cpp) that is added to the [main menu](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp).
