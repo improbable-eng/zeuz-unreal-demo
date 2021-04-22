@@ -25,10 +25,10 @@ void SShooterDirectConnect::Construct(const FArguments& InArgs)
 		.AutoHeight()
 		[
 			SAssignNew(AddressEditBox, SEditableTextBox)
-		    .MinDesiredWidth(350.f)
-		    .ClearKeyboardFocusOnCommit(false)
-		    .HintText(NSLOCTEXT("DCWidget", "EnterAddress", "Enter server address with port..."))
-		    .Font(TextEnterFont)
+			.MinDesiredWidth(350.f)
+			.ClearKeyboardFocusOnCommit(false)
+			.HintText(NSLOCTEXT("DCWidget", "EnterAddress", "Enter server address with port..."))
+			.Font(TextEnterFont)
 		]
 
 		// Connect button
