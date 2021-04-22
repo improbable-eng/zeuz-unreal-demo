@@ -64,12 +64,14 @@ void UDiscoverability::ParseCLIOptions()
 
 	if (!FParse::Value(FCommandLine::Get(), TEXT("payloadId"), PayloadId))
 	{
-		UE_LOG(LogDiscoverability, Display, TEXT("No payload ID given in CLI (-payloadId), defaulting to %s"), *PayloadId);
+		UE_LOG(LogDiscoverability, Display, TEXT("No payload ID given in CLI (-payloadId), defaulting to %s"),
+		       *PayloadId);
 	}
 
 	if (!FParse::Value(FCommandLine::Get(), TEXT("payloadIp"), PayloadIp))
 	{
-		UE_LOG(LogDiscoverability, Display, TEXT("No payload IP given in CLI (-payloadIp), defaulting to %s"), *PayloadIp);
+		UE_LOG(LogDiscoverability, Display, TEXT("No payload IP given in CLI (-payloadIp), defaulting to %s"),
+		       *PayloadIp);
 	}
 }
 
@@ -112,6 +114,6 @@ void UDiscoverability::OnResponse(FHttpRequestPtr Request, FHttpResponsePtr Resp
 	if (ResponseCode < 200 || ResponseCode >= 300)
 	{
 		UE_LOG(LogDiscoverability, Warning, TEXT("Posting to matchmaker failed with error code %d (message: %s)"),
-		       *Response->GetContentAsString());
+		       ResponseCode, *Response->GetContentAsString());
 	}
 }
