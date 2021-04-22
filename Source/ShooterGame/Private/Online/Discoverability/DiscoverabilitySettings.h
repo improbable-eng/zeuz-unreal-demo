@@ -2,7 +2,6 @@
 
 #include "DiscoverabilitySettings.generated.h"
 
-//UDP Connection Settings
 USTRUCT(BlueprintType)
 struct FDiscoverabilitySettings
 {
