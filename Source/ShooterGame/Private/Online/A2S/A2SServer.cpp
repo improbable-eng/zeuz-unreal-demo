@@ -10,14 +10,6 @@ const uint8 SERVER_TYPE_DEDICATED = 0x64;
 const uint8 SERVER_OS_LINUX = 0x6C;
 const uint8 EXTRA_DATA_FLAG = 0x80; // Only extra field is 'port'
 
-UA2SServer::UA2SServer()
-{
-	if (!FParse::Value(FCommandLine::Get(), TEXT("payloadId"), PayloadId))
-	{
-		UE_LOG(LogA2S, Display, TEXT("No payload ID given in CLI (-payloadId), defaulting to %s"), *PayloadId);
-	}
-}
-
 void UA2SServer::Start()
 {
 	if (IsStarted)
@@ -52,6 +44,11 @@ void UA2SServer::ParseCLIOptions()
 	if (FParse::Value(FCommandLine::Get(), TEXT("statsPort"), Settings.Port))
 	{
 		UE_LOG(LogA2S, Display, TEXT("Overwriting A2S port with port given in CLI (-statsPort): %d"), Settings.Port);
+	}
+
+	if (!FParse::Value(FCommandLine::Get(), TEXT("payloadId"), PayloadId))
+	{
+		UE_LOG(LogA2S, Display, TEXT("No payload ID given in CLI (-payloadId), defaulting to %s"), *PayloadId);
 	}
 }
 

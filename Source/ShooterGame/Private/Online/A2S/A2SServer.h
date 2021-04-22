@@ -20,7 +20,7 @@ class UA2SServer : public UObject
 	GENERATED_BODY()
 
 public:
-	UA2SServer();
+	UA2SServer() { }
 
 	~UA2SServer() { }
 
@@ -36,7 +36,7 @@ public:
 	FA2SServerSettings Settings;
 
 private:
-	/** Overwrite blueprint settings with any settings in CLI */ 
+	/** Overwrite blueprint settings with any settings in CLI */
 	void ParseCLIOptions();
 
 	/** Open a UDP socket for receiving */

@@ -8,16 +8,6 @@ DEFINE_LOG_CATEGORY(LogDiscoverability);
 UDiscoverability::UDiscoverability()
 {
 	Http = &FHttpModule::Get();
-
-	if (!FParse::Value(FCommandLine::Get(), TEXT("payloadId"), PayloadId))
-	{
-		UE_LOG(LogA2S, Display, TEXT("No payload ID given in CLI (-payloadId), defaulting to %s"), *PayloadId);
-	}
-
-	if (!FParse::Value(FCommandLine::Get(), TEXT("payloadIp"), PayloadIp))
-	{
-		UE_LOG(LogA2S, Display, TEXT("No payload IP given in CLI (-payloadIp), defaulting to %s"), *PayloadIp);
-	}
 }
 
 void UDiscoverability::Start()
@@ -70,6 +60,16 @@ void UDiscoverability::ParseCLIOptions()
 		UE_LOG(LogDiscoverability, Display,
 		       TEXT("Overwriting matchmaker address with address given in CLI (-matchmakerAddr): %s"),
 		       *Settings.MatchmakerEndpoint);
+	}
+
+	if (!FParse::Value(FCommandLine::Get(), TEXT("payloadId"), PayloadId))
+	{
+		UE_LOG(LogA2S, Display, TEXT("No payload ID given in CLI (-payloadId), defaulting to %s"), *PayloadId);
+	}
+
+	if (!FParse::Value(FCommandLine::Get(), TEXT("payloadIp"), PayloadIp))
+	{
+		UE_LOG(LogA2S, Display, TEXT("No payload IP given in CLI (-payloadIp), defaulting to %s"), *PayloadIp);
 	}
 }
 
