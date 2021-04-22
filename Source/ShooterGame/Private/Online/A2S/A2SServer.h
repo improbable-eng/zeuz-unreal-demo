@@ -36,6 +36,9 @@ public:
 	FA2SServerSettings Settings;
 
 private:
+	/** Overwrite blueprint settings with any settings in CLI */ 
+	void ParseCLIOptions();
+
 	/** Open a UDP socket for receiving */
 	void OpenReceiveSocket();
 

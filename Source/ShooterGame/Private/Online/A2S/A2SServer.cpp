@@ -16,11 +16,6 @@ UA2SServer::UA2SServer()
 	{
 		UE_LOG(LogA2S, Display, TEXT("No payload ID given in CLI (-payloadId), defaulting to %s"), *PayloadId);
 	}
-	if (!FParse::Value(FCommandLine::Get(), TEXT("statsPort"), Settings.Port))
-	{
-		UE_LOG(LogA2S, Display, TEXT("No stats listen port given in CLI (-statsPort), defaulting to %d"),
-		       Settings.Port);
-	}
 }
 
 void UA2SServer::Start()
@@ -31,12 +26,14 @@ void UA2SServer::Start()
 		return;
 	}
 
+	ParseCLIOptions();
+
 	OpenReceiveSocket();
 	OpenSendSocket();
 
 	UDPReceiver->Start();
 	IsStarted = true;
-	UE_LOG(LogA2S, Display, TEXT("Started A2S server on port %d"), Settings.Port);
+	UE_LOG(LogA2S, Display, TEXT("Started A2S server on port %d (payloadId: %s)"), Settings.Port, *PayloadId);
 }
 
 void UA2SServer::Stop()
@@ -48,6 +45,14 @@ void UA2SServer::Stop()
 	CloseSendSocket();
 
 	UE_LOG(LogA2S, Display, TEXT("Stopping A2S server"));
+}
+
+void UA2SServer::ParseCLIOptions()
+{
+	if (FParse::Value(FCommandLine::Get(), TEXT("statsPort"), Settings.Port))
+	{
+		UE_LOG(LogA2S, Display, TEXT("Overwriting A2S port with port given in CLI (-statsPort): %d"), Settings.Port);
+	}
 }
 
 void UA2SServer::OpenReceiveSocket()

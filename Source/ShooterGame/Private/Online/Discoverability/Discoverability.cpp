@@ -9,15 +9,11 @@ UDiscoverability::UDiscoverability()
 {
 	Http = &FHttpModule::Get();
 
-	if (!FParse::Value(FCommandLine::Get(), TEXT("matchmakerAddr"), Settings.MatchmakerEndpoint))
-	{
-		UE_LOG(LogDiscoverability, Warning,
-		       TEXT("No matchmaker address specified in CLI (-matchmakerAddr), discoverability is disabled"));
-	}
 	if (!FParse::Value(FCommandLine::Get(), TEXT("payloadId"), PayloadId))
 	{
 		UE_LOG(LogA2S, Display, TEXT("No payload ID given in CLI (-payloadId), defaulting to %s"), *PayloadId);
 	}
+
 	if (!FParse::Value(FCommandLine::Get(), TEXT("payloadIp"), PayloadIp))
 	{
 		UE_LOG(LogA2S, Display, TEXT("No payload IP given in CLI (-payloadIp), defaulting to %s"), *PayloadIp);
@@ -26,6 +22,8 @@ UDiscoverability::UDiscoverability()
 
 void UDiscoverability::Start()
 {
+	ParseCLIOptions();
+
 	if (Settings.MatchmakerEndpoint.IsEmpty())
 	{
 		UE_LOG(LogDiscoverability, Warning, TEXT("No matchmaker address specified, not starting discoverability"));
@@ -41,8 +39,9 @@ void UDiscoverability::Start()
 
 	World->GetTimerManager().SetTimer(TimerHandle, this, &UDiscoverability::SendUpdate, Settings.Interval, true);
 
-	UE_LOG(LogDiscoverability, Display, TEXT("Started notifying matchmaker of availability (every %ds, endpoint: %s)"),
-	       Settings.Interval, *Settings.MatchmakerEndpoint);
+	UE_LOG(LogDiscoverability, Display,
+	       TEXT("Started notifying matchmaker of availability (every %ds, endpoint: %s, payloadId: %s, payloadIp: %s)"),
+	       Settings.Interval, *Settings.MatchmakerEndpoint, *PayloadId, *PayloadIp);
 }
 
 void UDiscoverability::Stop()
@@ -62,6 +61,16 @@ void UDiscoverability::Stop()
 
 	World->GetTimerManager().ClearTimer(TimerHandle);
 	UE_LOG(LogDiscoverability, Display, TEXT("Stopped notifying matchmaker of availability"));
+}
+
+void UDiscoverability::ParseCLIOptions()
+{
+	if (FParse::Value(FCommandLine::Get(), TEXT("matchmakerAddr"), Settings.MatchmakerEndpoint))
+	{
+		UE_LOG(LogDiscoverability, Display,
+		       TEXT("Overwriting matchmaker address with address given in CLI (-matchmakerAddr): %s"),
+		       *Settings.MatchmakerEndpoint);
+	}
 }
 
 void UDiscoverability::SendUpdate()
