@@ -2,7 +2,6 @@
 
 #include "DiscoverabilitySettings.generated.h"
 
-//UDP Connection Settings
 USTRUCT(BlueprintType)
 struct FDiscoverabilitySettings
 {
@@ -10,7 +9,7 @@ struct FDiscoverabilitySettings
 
 	/** Endpoint of the matchmaker to send updates to */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Discoverability Properties")
-	FString MatchmakerEndpoint = TEXT("http://localhost:9000/v1/gameservers");
+	FString MatchmakerEndpoint = TEXT("");
 
 	/** Time in seconds between updates sent to the matchmaker */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Discoverability Properties")

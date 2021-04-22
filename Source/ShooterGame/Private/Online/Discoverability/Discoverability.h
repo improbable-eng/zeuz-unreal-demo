@@ -31,6 +31,9 @@ public:
 	FDiscoverabilitySettings Settings;
 
 private:
+	/** Overwrite blueprint settings with any settings in CLI */
+	void ParseCLIOptions();
+
 	UFUNCTION()
 	void SendUpdate();
 

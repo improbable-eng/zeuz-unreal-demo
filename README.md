@@ -2,6 +2,12 @@
 An adaptation of the Unreal Engine [ShooterGame](https://docs.unrealengine.com/en-US/Resources/SampleGames/ShooterGame/index.html) example game project to demonstrate how to support [_zeuz_](https://zeuz.io/) orchestration.
 
 
+## Before You Read
+Before you follow this example, there are a couple of general points to note: 
+- Unreal handles its internal command line arguments differently to custom ones. Read the payload commands in each section carefully for the correct use.
+    - Internal flag values are assigned to a flag with an `=` between the flag key and value (e.g. `-PORT=29000`).
+    - Custom flag values are assigned to a flag with a space between the flag key and value (e.g. `-payloadId my-payload-id-123`).
+
 ## Base Game Hosting
 Without any changes, the base ShooterGame project can be built and published to zeuz. The payload command for this is:
 ```
@@ -9,8 +15,14 @@ Without any changes, the base ShooterGame project can be built and published to 
 run
 binaryactivename=ShooterServer
 binaryexecpath=/opt/zeuz/gameserver/ShooterServer.sh
-execargs=/Game/Maps/Highrise -log -PORT=${servicePort:PortName} -NOSTEAM
+execargs=/Game/Maps/Highrise -log -NOSTEAM -PORT=${servicePort:PortName}
 ```
+The execution flags specify:
+- The map to launch (`/Game/Maps/Highrise`).
+- Enable logging (`-log`).
+- Disable Steam (`-NOSTEAM`).
+- The port to host on (`-PORT=${servicePort:PortName}`).
+    - This makes use of the port variable zeuz makes available to you.
 
 
 ## Basic zeuz Support
@@ -25,7 +37,7 @@ Once the code changes are implemented, the payload command needs to be updated w
 run
 binaryactivename=ShooterServer
 binaryexecpath=/opt/zeuz/gameserver/ShooterServer.sh
-execargs=/Game/Maps/Highrise -log -PORT=${servicePort:PortName} -NOSTEAM
+execargs=/Game/Maps/Highrise -log -NOSTEAM -PORT=${servicePort:PortName}
 apikey=<API_KEY>
 apisecret=<API_KEY_PASSWORD>
 apiendpoint=https://zcp.zeuz.io/api/v1
@@ -52,7 +64,7 @@ The `${statsPort}` variable is used in the payload command to specify this:
 run
 binaryactivename=ShooterServer
 binaryexecpath=/opt/zeuz/gameserver/ShooterServer.sh
-execargs=/Game/Maps/Highrise -log -PORT=${servicePort:PortName} -NOSTEAM -statsPort=${statsPort}
+execargs=/Game/Maps/Highrise -log -NOSTEAM -PORT=${servicePort:PortName} -statsPort ${statsPort}
 apikey=<API_KEY>
 apisecret=<API_KEY_PASSWORD>
 apiendpoint=https://zcp.zeuz.io/api/v1
@@ -72,6 +84,18 @@ Similarly to the [A2S server](#ccu-tracking-a2s-protocol), this component is cre
 However, when the match state is `WaitingPostMatch`, we do not wish to have any more players connect to the game server, so the updates are stopped (see [`ShooterGameMode::DefaultTimer`](Source/ShooterGame/Private/Online/ShooterGameMode.cpp)).
 There will be a short time between the last update sent to the matchmaker and the matchmaker labelling the game server as 'not ready', in which the matchmaker may still route clients to the game server.
 If a player connects in this case, they will see the end of game scoreboard and then disconnect gracefully, like any other player. 
+
+The matchmaker endpoint, along with the payload ID and IP, is specified to the game server in the payload command, so it can interact with the matchmaker:
+```
+/opt/zeuz/bin/payloadrunner
+run
+binaryactivename=ShooterServer
+binaryexecpath=/opt/zeuz/gameserver/ShooterServer.sh
+execargs=/Game/Maps/Highrise -log -NOSTEAM -PORT=${servicePort:PortName} -statsPort ${statsPort} -payloadIp ${serviceIP} -payloadId ${payloadID} -matchmakerAddr "http://123.45.67.89:9000"
+apikey=<API_KEY>
+apisecret=<API_KEY_PASSWORD>
+apiendpoint=https://zcp.zeuz.io/api/v1
+```
 
 ### The Matchmaker
 Any matchmaker used alongside zeuz and this game server needs to support two endpoints:
