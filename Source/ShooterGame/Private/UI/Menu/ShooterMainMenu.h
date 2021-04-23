@@ -15,7 +15,8 @@
 
 class FShooterMainMenu : public TSharedFromThis<FShooterMainMenu>, public FTickableGameObject
 {
-public:	
+public:
+	FShooterMainMenu(FString MatchmakerEndpoint);
 
 	virtual ~FShooterMainMenu();
 
@@ -297,6 +298,9 @@ protected:
 
 	/** Delegate function executed when login completes before quickmatch is started */
 	void OnLoginCompleteQuickmatch(int32 LocalUserNum, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error);
+
+	/** Matchmaker endpoint to fetch server addresses from */
+	FString MatchmakerEndpoint;
 
 	/** Delegate for canceling matchmaking */
 	FOnCancelMatchmakingCompleteDelegate OnCancelMatchmakingCompleteDelegate;

@@ -51,6 +51,11 @@ static const int ChunkMapping[] = { 1, 2 };
 	#define SHOOTER_XBOX_MENU 0
 #endif
 
+FShooterMainMenu::FShooterMainMenu(FString MatchmakerEndpoint_)
+{
+	MatchmakerEndpoint = MatchmakerEndpoint_;
+}
+
 FShooterMainMenu::~FShooterMainMenu()
 {
 	CleanupOnlinePrivilegeTask();
@@ -297,8 +302,8 @@ void FShooterMainMenu::Construct(TWeakObjectPtr<UShooterGameInstance> _GameInsta
 #endif //JOIN_ONLINE_GAME_ENABLED
 
 #else
-		TSharedPtr<FShooterMenuItem> MenuItem;
 		/* Options disabled for zeuz/Unreal demo
+		TSharedPtr<FShooterMenuItem> MenuItem;
 		// HOST menu option
 		MenuItem = MenuHelper::AddMenuItem(RootMenuItem, LOCTEXT("Host", "HOST"));
 
@@ -318,8 +323,11 @@ void FShooterMainMenu::Construct(TWeakObjectPtr<UShooterGameInstance> _GameInsta
 		RecordDemoItem->SelectedMultiChoice = bIsRecordingDemo;
 		*/
 
-		// JOIN menu option
-		MenuItem = MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Join", "JOIN"), this, &FShooterMainMenu::OnJoinClicked);
+		// JOIN menu option - only add this if a matchmaker endpoint is defined
+		if (!MatchmakerEndpoint.IsEmpty())
+		{
+			MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Join", "JOIN"), this, &FShooterMainMenu::OnJoinClicked);
+		}
 
 		/* Options disabled for zeuz/Unreal demo
 		// submenu under "join"
@@ -1270,7 +1278,6 @@ void FShooterMainMenu::OnJoinServer()
 
 void FShooterMainMenu::OnJoinClicked()
 {
-	const FString MatchmakerEndpoint = TEXT("http://35.236.127.144:29000/v1/gameservers");
 	UE_LOG(LogOnline, Display, TEXT("Fetching server to join from matchmaker at %s"), *MatchmakerEndpoint);
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FHttpModule::Get().CreateRequest();

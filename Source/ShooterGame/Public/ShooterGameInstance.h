@@ -216,6 +216,9 @@ private:
 	UPROPERTY(config)
 	FString MainMenuMap;
 
+	UPROPERTY(config)
+	FString MatchmakerEndpoint;
+
 
 	FName CurrentState;
 	FName PendingState;

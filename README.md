@@ -137,6 +137,8 @@ Unsupported options for 'HOST', 'LEADERBOARDS', 'ONLINE STORE' and 'DEMOS' have 
 
 ### JOIN
 If a matchmaker is set up (see [The Matchmaker](#the-matchmaker)), clicking 'JOIN' will query the matchmaker for a game server and connect to it.
+The endpoint of the matchmaker is specified in [DefaultGame.ini](Config/DefaultGame.ini).
+If no endpoint is specified, the 'JOIN' button will not render.
 
 A simple button is added to the [`MainMenu` component](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp) and a HTTP GET request (see [FShooterMainMenu::OnJoinClicked](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp)) is made to the matchmaker when it is clicked.
 
