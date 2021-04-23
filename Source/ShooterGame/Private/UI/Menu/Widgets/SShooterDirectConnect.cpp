@@ -62,7 +62,7 @@ FReply SShooterDirectConnect::OnConnectClicked()
 	{
 		if (GEngine && GEngine->GameViewport)
 		{
-			GEngine->GameViewport->RemoveAllViewportWidgets();
+			GEngine->GameViewport->RemoveViewportWidgetContent(OwnerWidget.ToSharedRef());
 		}
 
 		UShooterGameInstance* ShooterGameInstance = Cast<UShooterGameInstance>(PlayerController->GetGameInstance());
