@@ -112,6 +112,9 @@ public:
 	/** Travel directly to the named session */
 	void TravelToSession(const FName& SessionName);
 
+	/** Directly connect to an address */
+	void DirectConnectToSession(const FString& Address);
+
 	/** Get the Travel URL for a quick match */
 	static FString GetQuickMatchUrl();
 
@@ -212,6 +215,9 @@ private:
 
 	UPROPERTY(config)
 	FString MainMenuMap;
+
+	UPROPERTY(config)
+	FString MatchmakerEndpoint;
 
 
 	FName CurrentState;

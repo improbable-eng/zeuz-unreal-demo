@@ -6,6 +6,7 @@
 #include "Widgets/SShooterMenuWidget.h"
 #include "Widgets/SShooterServerList.h"
 #include "Widgets/SShooterDemoList.h"
+#include "Widgets/SShooterDirectConnect.h"
 #include "Widgets/SShooterLeaderboard.h"
 #include "Widgets/SShooterOnlineStore.h"
 #include "Widgets/SShooterSplitScreenLobbyWidget.h"
@@ -14,7 +15,8 @@
 
 class FShooterMainMenu : public TSharedFromThis<FShooterMainMenu>, public FTickableGameObject
 {
-public:	
+public:
+	explicit FShooterMainMenu(FString& MatchmakerEndpoint);
 
 	virtual ~FShooterMainMenu();
 
@@ -90,6 +92,9 @@ protected:
 
 	/** online store widget */
 	TSharedPtr<class SShooterOnlineStore> OnlineStoreWidget;
+	
+	/** The edit text widget. */
+	TSharedPtr<class SShooterDirectConnect> DirectConnectWidget;
 
 	/** custom menu */
 	TSharedPtr<class FShooterMenuItem> JoinServerItem;
@@ -99,6 +104,9 @@ protected:
 
 	/** yet another custom menu */
 	TSharedPtr<class FShooterMenuItem> OnlineStoreItem;
+
+	/** custom menu item for direct connecting */
+	TSharedPtr<class FShooterMenuItem> DirectConnectItem;
 
 	/** Custom demo browser menu */
 	TSharedPtr<class FShooterMenuItem> DemoBrowserItem;
@@ -216,8 +224,14 @@ protected:
 	/** Join server */
 	void OnJoinServer();
 
+	/** When the 'Join' button is clicked, fetch a sever from the matchmaker and connect to it */
+	void OnJoinClicked();
+
 	/** Show leaderboard */
 	void OnShowLeaderboard();
+
+	/** Show direct connect menu */
+	void OnShowDirectConnect();
 
 	/** Show online store */
 	void OnShowOnlineStore();
@@ -284,6 +298,9 @@ protected:
 
 	/** Delegate function executed when login completes before quickmatch is started */
 	void OnLoginCompleteQuickmatch(int32 LocalUserNum, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error);
+
+	/** Matchmaker endpoint to fetch server addresses from */
+	FString MatchmakerEndpoint;
 
 	/** Delegate for canceling matchmaking */
 	FOnCancelMatchmakingCompleteDelegate OnCancelMatchmakingCompleteDelegate;

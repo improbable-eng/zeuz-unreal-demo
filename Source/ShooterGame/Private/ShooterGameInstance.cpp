@@ -762,7 +762,7 @@ void UShooterGameInstance::BeginMainMenuState()
 	// player 0 gets to own the UI
 	ULocalPlayer* const Player = GetFirstGamePlayer();
 
-	MainMenuUI = MakeShareable(new FShooterMainMenu());
+	MainMenuUI = MakeShared<FShooterMainMenu>(MatchmakerEndpoint);
 	MainMenuUI->Construct(this, Player);
 	MainMenuUI->AddMenuToGameViewport();
 
@@ -1766,6 +1766,14 @@ void UShooterGameInstance::TravelToSession(const FName& SessionName)
 	ShowLoadingScreen();
 	GotoState(ShooterGameInstanceState::Playing);
 	InternalTravelToSession(SessionName);
+}
+
+void UShooterGameInstance::DirectConnectToSession(const FString& Address)
+{
+	AddNetworkFailureHandlers();
+	ShowLoadingScreen();
+	GotoState(ShooterGameInstanceState::Playing);
+	GetPrimaryPlayerController()->ClientTravel(Address, TRAVEL_Absolute);
 }
 
 void UShooterGameInstance::SetIgnorePairingChangeForControllerId( const int32 ControllerId )
