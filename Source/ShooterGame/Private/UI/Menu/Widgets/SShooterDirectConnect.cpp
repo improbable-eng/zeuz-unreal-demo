@@ -70,16 +70,19 @@ FReply SShooterDirectConnect::OnConnectClicked()
 
 	UE_LOG(LogOnline, Display, TEXT("Direct connecting to %s"), *Address);
 
-	APlayerController* PlayerController = PlayerOwner->PlayerController;
-	if (PlayerController)
+	if (PlayerOwner->PlayerController)
 	{
+		APlayerController* PlayerController = PlayerOwner->PlayerController;
 		if (GEngine && GEngine->GameViewport)
 		{
 			GEngine->GameViewport->RemoveViewportWidgetContent(OwnerWidget.ToSharedRef());
 		}
 
 		UShooterGameInstance* ShooterGameInstance = Cast<UShooterGameInstance>(PlayerController->GetGameInstance());
-		ShooterGameInstance->DirectConnectToSession(Address);
+		if (ShooterGameInstance)
+		{
+			ShooterGameInstance->DirectConnectToSession(Address);
+		}
 	}
 
 	return FReply::Handled();

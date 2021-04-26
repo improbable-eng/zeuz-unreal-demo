@@ -51,10 +51,7 @@ static const int ChunkMapping[] = { 1, 2 };
 	#define SHOOTER_XBOX_MENU 0
 #endif
 
-FShooterMainMenu::FShooterMainMenu(FString MatchmakerEndpoint_)
-{
-	MatchmakerEndpoint = MatchmakerEndpoint_;
-}
+FShooterMainMenu::FShooterMainMenu(FString& MatchmakerEndpoint) : MatchmakerEndpoint(MatchmakerEndpoint) {}
 
 FShooterMainMenu::~FShooterMainMenu()
 {
@@ -302,26 +299,6 @@ void FShooterMainMenu::Construct(TWeakObjectPtr<UShooterGameInstance> _GameInsta
 #endif //JOIN_ONLINE_GAME_ENABLED
 
 #else
-		/* Options disabled for zeuz/Unreal demo
-		TSharedPtr<FShooterMenuItem> MenuItem;
-		// HOST menu option
-		MenuItem = MenuHelper::AddMenuItem(RootMenuItem, LOCTEXT("Host", "HOST"));
-
-		// submenu under "host"
-		MenuHelper::AddMenuItemSP(MenuItem, LOCTEXT("FFALong", "FREE FOR ALL"), this, &FShooterMainMenu::OnUIHostFreeForAll);
-		MenuHelper::AddMenuItemSP(MenuItem, LOCTEXT("TDMLong", "TEAM DEATHMATCH"), this, &FShooterMainMenu::OnUIHostTeamDeathMatch);
-
-		TSharedPtr<FShooterMenuItem> NumberOfBotsOption = MenuHelper::AddMenuOptionSP(MenuItem, LOCTEXT("NumberOfBots", "NUMBER OF BOTS"), BotsCountList, this, &FShooterMainMenu::BotCountOptionChanged);
-		NumberOfBotsOption->SelectedMultiChoice = BotsCountOpt;
-
-		HostOnlineMapOption = MenuHelper::AddMenuOption(MenuItem, LOCTEXT("SELECTED_LEVEL", "Map"), MapList);
-
-		HostLANItem = MenuHelper::AddMenuOptionSP(MenuItem, LOCTEXT("LanMatch", "LAN"), OnOffList, this, &FShooterMainMenu::LanMatchChanged);
-		HostLANItem->SelectedMultiChoice = bIsLanMatch;
-
-		RecordDemoItem = MenuHelper::AddMenuOptionSP(MenuItem, LOCTEXT("RecordDemo", "Record Demo"), OnOffList, this, &FShooterMainMenu::RecordDemoChanged);
-		RecordDemoItem->SelectedMultiChoice = bIsRecordingDemo;
-		*/
 
 		// JOIN menu option - only add this if a matchmaker endpoint is defined
 		if (!MatchmakerEndpoint.IsEmpty())
@@ -329,46 +306,10 @@ void FShooterMainMenu::Construct(TWeakObjectPtr<UShooterGameInstance> _GameInsta
 			MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Join", "JOIN"), this, &FShooterMainMenu::OnJoinClicked);
 		}
 
-		/* Options disabled for zeuz/Unreal demo
-		// submenu under "join"
-		MenuHelper::AddMenuItemSP(MenuItem, LOCTEXT("Server", "SERVER"), this, &FShooterMainMenu::OnJoinServer);
-		JoinLANItem = MenuHelper::AddMenuOptionSP(MenuItem, LOCTEXT("LanMatch", "LAN"), OnOffList, this, &FShooterMainMenu::LanMatchChanged);
-		JoinLANItem->SelectedMultiChoice = bIsLanMatch;
-
-		DedicatedItem = MenuHelper::AddMenuOptionSP(MenuItem, LOCTEXT("Dedicated", "Dedicated"), OnOffList, this, &FShooterMainMenu::DedicatedServerChanged);
-		DedicatedItem->SelectedMultiChoice = bIsDedicatedServer;
-
-		// Server list widget that will be called up if appropriate
-		MenuHelper::AddCustomMenuItem(JoinServerItem,SAssignNew(ServerListWidget,SShooterServerList).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
-		*/
-
 		// Direct Connect
 		MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("DirectConnect", "DIRECT CONNECT"), this, &FShooterMainMenu::OnShowDirectConnect);
 		MenuHelper::AddCustomMenuItem(DirectConnectItem,SAssignNew(DirectConnectWidget,SShooterDirectConnect).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
-#endif
 
-		/* Options disabled for zeuz/Unreal demo
-		// Leaderboards
-		MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Leaderboards", "LEADERBOARDS"), this, &FShooterMainMenu::OnShowLeaderboard);
-		MenuHelper::AddCustomMenuItem(LeaderboardItem,SAssignNew(LeaderboardWidget,SShooterLeaderboard).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
-		*/
-
-#if ONLINE_STORE_ENABLED
-		/* Options disabled for zeuz/Unreal demo
-		// Purchases
-		MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Store", "ONLINE STORE"), this, &FShooterMainMenu::OnShowOnlineStore);
-		MenuHelper::AddCustomMenuItem(OnlineStoreItem, SAssignNew(OnlineStoreWidget, SShooterOnlineStore).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
-		*/
-#endif //ONLINE_STORE_ENABLED
-#if !SHOOTER_CONSOLE_UI
-
-		/* Options disabled for zeuz/Unreal demo
-		// Demos
-		{
-			MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Demos", "DEMOS"), this, &FShooterMainMenu::OnShowDemoBrowser);
-			MenuHelper::AddCustomMenuItem(DemoBrowserItem,SAssignNew(DemoListWidget,SShooterDemoList).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
-		}
-		*/
 #endif
 
 		// Options
@@ -1307,19 +1248,22 @@ void FShooterMainMenu::OnJoinClicked()
 		if (FJsonSerializer::Deserialize(Reader, JsonObject))
 		{
 			const FString IP = JsonObject->GetStringField("IP");
-			const int Port = JsonObject->GetIntegerField("Port");
+			const int32 Port = JsonObject->GetIntegerField("Port");
 			const FString Address = FString::Printf(TEXT("%s:%d"), *IP, Port);
 
-			APlayerController* PlayerController = PlayerOwner->PlayerController;
-			if (PlayerController)
+			if (PlayerOwner->PlayerController)
 			{
+				APlayerController* PlayerController = PlayerOwner->PlayerController;
 				if (GEngine && GEngine->GameViewport)
 				{
 					GEngine->GameViewport->RemoveAllViewportWidgets();
 				}
 
 				UShooterGameInstance* GameInstance = Cast<UShooterGameInstance>(PlayerController->GetGameInstance());
-				GameInstance->DirectConnectToSession(Address);
+				if (GameInstance)
+				{
+					GameInstance->DirectConnectToSession(Address);
+				}
 			}
 		}
 		else

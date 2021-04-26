@@ -762,7 +762,7 @@ void UShooterGameInstance::BeginMainMenuState()
 	// player 0 gets to own the UI
 	ULocalPlayer* const Player = GetFirstGamePlayer();
 
-	MainMenuUI = MakeShareable(new FShooterMainMenu(MatchmakerEndpoint));
+	MainMenuUI = MakeShared<FShooterMainMenu>(MatchmakerEndpoint);
 	MainMenuUI->Construct(this, Player);
 	MainMenuUI->AddMenuToGameViewport();
 

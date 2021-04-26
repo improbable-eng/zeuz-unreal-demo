@@ -6,17 +6,17 @@
 #include "Widgets/SShooterMenuWidget.h"
 #include "Widgets/SShooterServerList.h"
 #include "Widgets/SShooterDemoList.h"
+#include "Widgets/SShooterDirectConnect.h"
 #include "Widgets/SShooterLeaderboard.h"
 #include "Widgets/SShooterOnlineStore.h"
 #include "Widgets/SShooterSplitScreenLobbyWidget.h"
-#include "Widgets/SShooterDirectConnect.h"
 #include "ShooterOptions.h"
 
 
 class FShooterMainMenu : public TSharedFromThis<FShooterMainMenu>, public FTickableGameObject
 {
 public:
-	FShooterMainMenu(FString MatchmakerEndpoint);
+	explicit FShooterMainMenu(FString& MatchmakerEndpoint);
 
 	virtual ~FShooterMainMenu();
 
