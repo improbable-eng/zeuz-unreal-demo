@@ -64,24 +64,30 @@ FReply SShooterDirectConnect::OnConnectClicked()
 	{
 		// On-screen messaging for this would be better, but for now just handle gracefully 
 		UE_LOG(LogOnline, Warning, TEXT("Did not match IP:Port regex (address: %s), will not attempt to connect"),
-		       *Address)
+		       *Address);
 		return FReply::Handled();
 	}
 
 	UE_LOG(LogOnline, Display, TEXT("Direct connecting to %s"), *Address);
 
-	if (PlayerOwner->PlayerController)
+	if (APlayerController* PlayerController = PlayerOwner->PlayerController)
 	{
-		APlayerController* PlayerController = PlayerOwner->PlayerController;
 		if (GEngine && GEngine->GameViewport)
 		{
 			GEngine->GameViewport->RemoveViewportWidgetContent(OwnerWidget.ToSharedRef());
 		}
-
-		UShooterGameInstance* ShooterGameInstance = Cast<UShooterGameInstance>(PlayerController->GetGameInstance());
-		if (ShooterGameInstance)
+		else
 		{
-			ShooterGameInstance->DirectConnectToSession(Address);
+			UE_LOG(LogOnline, Warning, TEXT("Could not get game viewport, no widgets removed"));
+		}
+
+		if (UShooterGameInstance* GInstance = Cast<UShooterGameInstance>(PlayerController->GetGameInstance()))
+		{
+			GInstance->DirectConnectToSession(Address);
+		}
+		else
+		{
+			UE_LOG(LogOnline, Warning, TEXT("Could not get game instance, direct connecting failed"));
 		}
 	}
 

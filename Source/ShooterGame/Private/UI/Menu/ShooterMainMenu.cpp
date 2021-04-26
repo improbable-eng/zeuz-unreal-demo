@@ -1251,19 +1251,25 @@ void FShooterMainMenu::OnJoinClicked()
 			const int32 Port = JsonObject->GetIntegerField("Port");
 			const FString Address = FString::Printf(TEXT("%s:%d"), *IP, Port);
 
-			if (PlayerOwner->PlayerController)
+			if (APlayerController* PlayerController = PlayerOwner->PlayerController)
 			{
-				APlayerController* PlayerController = PlayerOwner->PlayerController;
 				if (GEngine && GEngine->GameViewport)
 				{
 					GEngine->GameViewport->RemoveAllViewportWidgets();
 				}
-
-				UShooterGameInstance* GameInstance = Cast<UShooterGameInstance>(PlayerController->GetGameInstance());
-				if (GameInstance)
+				else
 				{
-					GameInstance->DirectConnectToSession(Address);
+					UE_LOG(LogOnline, Warning, TEXT("Could not get game viewport, no widgets removed"));
 				}
+
+				if (UShooterGameInstance* GInstance = Cast<UShooterGameInstance>(PlayerController->GetGameInstance()))
+				{
+					GInstance->DirectConnectToSession(Address);
+				}
+				else
+				{
+                    UE_LOG(LogOnline, Warning, TEXT("Could not get game instance, joining server failed"));
+                }
 			}
 		}
 		else
