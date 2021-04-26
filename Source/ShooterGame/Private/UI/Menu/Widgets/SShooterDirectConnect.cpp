@@ -2,6 +2,10 @@
 
 #include "ShooterStyle.h"
 
+const FRegexPattern IPPortRegex(TEXT(
+	"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+"
+));
+
 void SShooterDirectConnect::Construct(const FArguments& InArgs)
 {
 	PlayerOwner = InArgs._PlayerOwner;
@@ -55,6 +59,15 @@ FReply SShooterDirectConnect::OnConnectClicked()
 	}
 
 	const FString Address = AddressEditBox->GetText().ToString();
+	FRegexMatcher Matcher(IPPortRegex, Address);
+	if (!Matcher.FindNext())
+	{
+		// On-screen messaging for this would be better, but for now just handle gracefully 
+		UE_LOG(LogOnline, Warning, TEXT("Did not match IP:Port regex (address: %s), will not attempt to connect"),
+		       *Address)
+		return FReply::Handled();
+	}
+
 	UE_LOG(LogOnline, Display, TEXT("Direct connecting to %s"), *Address);
 
 	APlayerController* PlayerController = PlayerOwner->PlayerController;
