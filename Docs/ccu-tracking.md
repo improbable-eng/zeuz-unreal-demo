@@ -1,5 +1,5 @@
 ## CCU Tracking (A2S Protocol)
-To support the A2S protocol, an A2S server component is dropped in.
+To support the A2S (any to server) protocol, an A2S server component is dropped in.
 This keeps changes simple and makes the component much more manageable.
 
 The component also has settings, configurable from the Unreal Engine editor or the command line (command line options prioritised).

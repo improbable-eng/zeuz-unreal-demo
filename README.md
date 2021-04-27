@@ -97,7 +97,7 @@ If you don't see this, speak to your zeuz account manager.
 [ShooterGameMode.cpp](Source/ShooterGame/Private/Online/ShooterGameMode.cpp),
 [ShooterGame.Build.cs](Source/ShooterGame/ShooterGame.Build.cs)
 
-To support CCU tracking, the game server must implement the [A2S protocol](https://developer.valvesoftware.com/wiki/Server_queries).
+To support CCU tracking, the game server must implement the [A2S (any to server) protocol](https://developer.valvesoftware.com/wiki/Server_queries).
 For this, an [`A2SServer` component](Source/ShooterGame/Private/Online/A2S/A2SServer.h) is created which utilises Unreal's `UDPSocket` API to listen to and respond to A2S queries.
 This example only supports `A2S_INFO` queries, as is required by zeuz CCU tracking, but you may wish to support further A2S features for your own purposes.
 
@@ -128,7 +128,7 @@ A payload being ready doesn't mean that the game server running on it is ready t
 [ShooterGameMode.cpp](Source/ShooterGame/Private/Online/ShooterGameMode.cpp),
 [ShooterGame.Build.cs](Source/ShooterGame/ShooterGame.Build.cs)
 
-To overcome this, the game server has a [`Discoverability` component](Source/ShooterGame/Private/Online/Discoverability/Discoverability.h) which `POST`s to a matchmaker service ([description below](#the-matchmaker)) to indicate that it is ready to accept connections.
+The game server has a [`Discoverability` component](Source/ShooterGame/Private/Online/Discoverability/Discoverability.h) which periodically `POST`s to a matchmaker service (see [full docs](Docs/server-readiness.md) for matchmaker details) to indicate that it is ready to accept connections.
 
 Similarly to the [A2S server](#ccu-tracking-a2s-protocol), this component is created by the [game mode (`ShooterGameMode`)](Source/ShooterGame/Private/Online/ShooterGameMode.cpp) and is started during the `BeginPlay` event.
 However, when the match state is `WaitingPostMatch`, we do not wish to have any more players connect to the game server, so the updates are stopped (see [`ShooterGameMode::DefaultTimer`](Source/ShooterGame/Private/Online/ShooterGameMode.cpp)).
@@ -144,35 +144,10 @@ binaryexecpath=/opt/zeuz/gameserver/ShooterServer.sh
 execargs=/Game/Maps/Highrise -log -NOSTEAM -PORT=${servicePort:PortName} -payloadIp ${serviceIP} -payloadId ${payloadID} -matchmakerAddr "http://123.45.67.89:9000"
 ```
 
-### The Matchmaker
-Any matchmaker used alongside zeuz and this game server needs to support two endpoints (not necessarily at the root URL):
-- `GET`: Request a game server IP and port.
-    - The matchmaker uses zeuz to find and, if necessary, reserve a payload for the player to connect to.
-        - The body for the `GET` response is as follows (filled with example data):
-      ```json
-      {
-        "IP": "123.45.67.89",
-        "Port": 29000
-      }
-      ```
-- `POST /<PAYLOAD ID>`: Add a payload to the collection of ready game servers.
-    - The body for the `POST` request is as follows (filled with example data):
-    ```json
-    {
-      "Ccu": 12,
-      "IP": "123.45.67.89",
-      "Port": 29000
-    }
-    ```
-
-The matchmaker expects periodic updates from the game server indicating that it is accepting client connections ('ready').
-If it does not receive any updates from a game server after a set interval, it marks the game server as 'not ready' and no longer routes clients to it.
-Clients can query the matchmaker for available game servers.
-
 The matchmaker is also used to allow players to find a server to play on, using the `GET` endpoint, see the [UI Changes section](#ui-changes).
 
-For this example, a matchmaker example can be found [here](https://github.com/improbable/zeuz-demo).
-When using this example matchmaker, the endpoint set for the `Discoverability` component should be `http://<MATCHMAKER IP>:<PORT>/v1/gameservers`.
+An example matchmaker used with this project can be found [here](https://github.com/improbable/zeuz-demo).
+When using this matchmaker, the endpoint set for the `Discoverability` component should be `http://<MATCHMAKER IP>:<PORT>/v1/gameservers`.
 
 
 ## UI Changes
@@ -191,7 +166,7 @@ Unsupported options for 'HOST', 'LEADERBOARDS', 'ONLINE STORE' and 'DEMOS' have 
 ### JOIN
 > **More information on this exchange can be found in the [Server Readiness full docs](Docs/server-readiness.md).**
 
-If a matchmaker is set up (see [The Matchmaker](#the-matchmaker)), clicking 'JOIN' will query the matchmaker for a game server and connect to it.
+If a matchmaker is set up (see [the Server Readiness full docs](Docs/server-readiness.md)), clicking 'JOIN' will query the matchmaker for a game server and connect to it.
 The endpoint of the matchmaker is specified in [DefaultGame.ini](Config/DefaultGame.ini) (hint: use quotation marks around the URL, e.g. `MatchmakerEndpoint="http://mymatchmakerip:9000/"`).
 If no endpoint is specified, the 'JOIN' button will not render.
 

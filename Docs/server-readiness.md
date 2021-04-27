@@ -43,28 +43,34 @@ void AShooterGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 ```
 
-### Notifying the Matchmaker
-To advertise the game server's availability, it `POST`s its CCU (concurrent users) to the matchmaker.
-```json
-{
-    "Ccu": 12,
-    "IP": "123.45.67.89",
-    "Port": 9000
-}
-```
+### The Matchmaker
+The matchmaker expects periodic updates from the game server indicating that it is accepting client connections ('ready').
+If it does not receive any updates from a game server after a set interval, it marks the game server as 'not ready' and no longer routes clients to it.
+Clients can query the matchmaker for available game servers.
 
-On receiving this request, the matchmaker notes the game server as 'ready' and begins to route clients to it, until it is full (therefore, the matchmaker must know what the maximum player count is).
-When the matchmaker does not receive an update from a server after a specified timeout, it marks the game server as 'not ready' and no longer routes clients to it.
+Any matchmaker used alongside zeuz and this game server needs to support two operations:
+- `GET /`: Request a game server IP and port.
+    - The matchmaker uses zeuz to find and, if necessary, reserve a payload for the player to connect to.
+        - The body for the `GET` response is as follows (filled with example data):
+      ```json
+      {
+          "IP": "123.45.67.89",
+          "Port": 29000
+      }
+      ```
+- `POST /<PAYLOAD ID>`: Add a payload to the collection of ready game servers.
+    - The body for the `POST` request is as follows (filled with example data):
+    ```json
+    {
+        "Ccu": 12,
+        "IP": "123.45.67.89",
+        "Port": 29000
+    }
+    ```
 
-### Requesting a Game Server
-Clients can use the 'JOIN' button to request a game server from the matchmaker and connect to the game.
-The request is a `GET` and the response body contains the connection information.
-```json
-{
-    "IP": "123.45.67.89",
-    "Port": 9000
-}
-```
+The REST operations that the matchmaker must support can be made available on the same or two different endpoints.
+To specify a `GET` endpoint, for the game client to request a game server to play on, edit the `MatchmakerEndpoint` entry in [DefaultGame.ini](../Config/DefaultGame.ini) (e.g. `MatchmakerEndpoint="http://123.45.67.89:9000/servers"`).
+To specify the `POST` endpoint, for the game server to advertise its readiness, supply a command line argument for `-matchmakerAddr` when starting the server (e.g. `-matchmakerAddr http://123.45.67.89:9000`).
 
 ### Dependencies
 This component requires the `HTTP` and `Json` packages.
