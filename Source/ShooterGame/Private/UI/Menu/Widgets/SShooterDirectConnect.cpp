@@ -2,10 +2,6 @@
 
 #include "ShooterStyle.h"
 
-const FRegexPattern IPPortRegex(TEXT(
-	"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+"
-));
-
 void SShooterDirectConnect::Construct(const FArguments& InArgs)
 {
 	PlayerOwner = InArgs._PlayerOwner;
@@ -59,6 +55,10 @@ FReply SShooterDirectConnect::OnConnectClicked()
 	}
 
 	const FString Address = AddressEditBox->GetText().ToString();
+
+	const FRegexPattern IPPortRegex(TEXT(
+		"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+"
+	));
 	FRegexMatcher Matcher(IPPortRegex, Address);
 	if (!Matcher.FindNext())
 	{
