@@ -7,10 +7,10 @@ The first change is to track whether or not a player has joined yet (in the [`Sh
 
 class AShooterGameMode : public AGameMode
 {
-    // ...
-    /** Tracks if a game has joined the server at least once */
-    bool bHasPlayerConnected = false;
-    // ...
+ 	// ...
+	/** Tracks if a game has joined the server at least once */
+	bool bHasPlayerConnected = false;
+	// ...
 }
 ```
 
@@ -19,7 +19,7 @@ class AShooterGameMode : public AGameMode
 
 void AShooterGameMode::PostLogin(APlayerController* NewPlayer)
 {
-    Super::PostLogin(NewPlayer);
+	Super::PostLogin(NewPlayer);
 
 	bHasPlayerConnected = true;
 	// ...
