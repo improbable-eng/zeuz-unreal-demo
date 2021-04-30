@@ -23,7 +23,7 @@ apiendpoint=https://zcp.zeuz.io/api/v1
 
 Before you follow this example, there are a couple of general points to note:
 - The '**Files changed**' list for each section only notes the most significant changes.
-    - For example, the files changed to edit the on-screen messaging text at the end of the game in ['Basic zeuz Support'](#basic-zeuz-support) are omitted.
+    - For example, the files changed to edit the on-screen messaging text at the end of the game in ['Basic zeuz support'](#basic-zeuz-support) are omitted.
 - Unreal handles its internal command line arguments differently to custom ones. Read the payload commands in each section carefully for the correct use.
     - Internal flag values are assigned to a flag with an `=` between the flag key and value (e.g. `-PORT=29000`).
     - Custom flag values are assigned to a flag with a space between the flag key and value (e.g. `-payloadId my-payload-id-123`).
@@ -52,13 +52,13 @@ The execution flags specify:
 
 Whilst this is a functional game hosted on zeuz, there are a few problems which are addressed in this project:
 - The server keeps restarting matches.
-    - See [Basic zeuz Support](#basic-zeuz-support).
+    - See [Basic zeuz support](#basic-zeuz-support).
 - zeuz cannot read the number of players connected to the server.
-    - See [CCU Tracking (A2S Protocol)](#ccu-tracking-a2s-protocol).
+    - See [CCU tracking (A2S protocol)](#ccu-tracking-a2s-protocol).
 - Players can attempt to connect to the server when it is not ready.
-    - See [Server Readiness](#server-readiness).
+    - See [Server readiness](#server-readiness).
 - Since the payload image is started whenever a payload is ready (and unreserved), matches can start for unreserved payloads.
-    - See [Further Work](#further-work).
+    - See [Server waiting](#server-waiting).
 
 
 ## Basic zeuz support
@@ -180,11 +180,16 @@ If you know the IP and port of the game server you wish to connect to, you can e
 This is a new [`DirectConnect` widget](Source/ShooterGame/Private/UI/Menu/Widgets/SShooterDirectConnect.cpp) that is added to the [main menu](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp).
 
 
-## Further work
+## Server waiting
+> **For a full description of the changes with code snippets, see the [full docs](Docs/server-waiting.md) of this change.**
+
 When a zeuz payload starts, the image it is launched with is started straight away, meaning that the game server starts executing before the payload is reserved.
+
+**Files changed:** [ShooterGameMode.h](Source/ShooterGame/Public/Online/ShooterGameMode.h),
+[ShooterGameMode.cpp](Source/ShooterGame/Private/Online/ShooterGameMode.cpp)
+
 A ShooterGame server moves through three phases ('pre-match', 'in-match', 'post-match') after specified intervals of time.
 This can cause problems if a payload spends a long amount of time as unreserved before players begin to connect to it as the server may not be in its pre-match phase when a player connects.
 
-To overcome this, we can make use of the matchmaker. When directing the first player to a server, the matchmaker can instruct the game server to begin its pre-match countdown.
-This introduces a new phase to the server which we can call 'waiting'.
-When the game server is in its 'waiting' phase it means it is unreserved and when a game server is in any other phase ('pre-match', 'in-match', 'post-match'), the payload it is running on is reserved.
+To overcome this, the timer of the game (see [`ShooterGameMode::DefaultTimer`](Source/ShooterGame/Private/Online/ShooterGameMode.cpp)) doesn't count down when the match is waiting to start **and** there has not yet been a connected player.
+After the first player connects, the timer will count down to the start of the game.
