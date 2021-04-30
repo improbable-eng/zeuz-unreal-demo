@@ -4,7 +4,7 @@ An adaptation of the Unreal Engine [ShooterGame](https://docs.unrealengine.com/e
 For information on uploading and hosting game servers on zeuz, please see [doc.zeuz.io](https://doc.zeuz.io/).
 
 
-## Before You Read
+## Before you read
 Each section addresses a different behaviour missing from the unmodified [ShooterGame](https://docs.unrealengine.com/en-US/Resources/SampleGames/ShooterGame/index.html) project.
 You should use this project as an example to read the changes you need to make to your game to better support zeuz orchestration.
 
@@ -34,7 +34,7 @@ Lastly, if you wish to follow along, making similar changes to the [ShooterGame]
 There is an [Unreal Engine tutorial](https://docs.unrealengine.com/en-US/InteractiveExperiences/Networking/HowTo/DedicatedServers/index.html) for this.
 
 
-## Base Game Hosting
+## Base game hosting
 Without any changes, the unmodified [ShooterGame project](https://docs.unrealengine.com/en-US/Resources/SampleGames/ShooterGame/index.html) can be built and published to zeuz. The payload command for this is:
 ```
 /opt/zeuz/bin/payloadrunner
@@ -61,7 +61,7 @@ Whilst this is a functional game hosted on zeuz, there are a few problems which 
     - See [Further Work](#further-work).
 
 
-## Basic zeuz Support
+## Basic zeuz support
 > **For a full description of the changes with code snippets, see the [full docs](Docs/basic-zeuz-support.md) of this change.**
 
 To support [automatic payload release](https://doc.zeuz.io/docs/payload-definition#automatic-payload-release), your game server executable should terminate at the end of the match.
@@ -83,7 +83,7 @@ apiendpoint=https://zcp.zeuz.io/api/v1
 ```
 
 
-## CCU Tracking (A2S Protocol)
+## CCU tracking (A2S protocol)
 > **For a full description of the changes with code snippets, see the [full docs](Docs/ccu-tracking.md) of this change.**
 
 With zeuz, you can use [CCU tracking](https://doc.zeuz.io/docs/ccu-tracking) to view how many concurrent players are connected to your game servers.
@@ -116,7 +116,7 @@ In addition to `${statsPort}` being used in the `execargs`, the payload ID (acce
 This is not crucial for zeuz to track CCUs, but useful if you wish to track CCUs per payload for your own queries.
 
 
-## Server Readiness
+## Server readiness
 > **For a full description of the changes with code snippets, see the [full docs](Docs/server-readiness.md) of this change.**
 
 A payload being ready doesn't mean that the game server running on it is ready to accept connections from players.
@@ -150,7 +150,7 @@ An example matchmaker used with this project can be found [here](https://github.
 When using this matchmaker, the endpoint set for the `Discoverability` component should be `http://<MATCHMAKER IP>:<PORT>/v1/gameservers`.
 
 
-## UI Changes
+## UI changes
 Whilst not necessary for supporting zeuz orchestration, the base ShooterGame example UI has been modified to allow players to connect to zeuz-hosted game servers.
 These options are 'JOIN' and 'DIRECT CONNECT'.
 Unsupported options for 'HOST', 'LEADERBOARDS', 'ONLINE STORE' and 'DEMOS' have been removed from the menu, but their source code still exists.
@@ -180,7 +180,7 @@ If you know the IP and port of the game server you wish to connect to, you can e
 This is a new [`DirectConnect` widget](Source/ShooterGame/Private/UI/Menu/Widgets/SShooterDirectConnect.cpp) that is added to the [main menu](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp).
 
 
-## Further Work
+## Further work
 When a zeuz payload starts, the image it is launched with is started straight away, meaning that the game server starts executing before the payload is reserved.
 A ShooterGame server moves through three phases ('pre-match', 'in-match', 'post-match') after specified intervals of time.
 This can cause problems if a payload spends a long amount of time as unreserved before players begin to connect to it as the server may not be in its pre-match phase when a player connects.

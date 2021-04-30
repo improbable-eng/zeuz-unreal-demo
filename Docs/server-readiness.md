@@ -1,10 +1,10 @@
-﻿## Server Readiness
+﻿## Server readiness
 To notify a matchmaker when the server is ready to accept player connections, a Discoverability component is dropped into the server.
 This keeps changes simple and makes the component much more manageable.
 
 The component also has settings, configurable from the Unreal Engine editor or the command line (command line options prioritised).
 
-### Discoverability Component Lifecycle
+### Discoverability component lifecycle
 The Discoverability component is created and started during the game mode's `BeginPlay` event, since we only wish to have players connect when the game has started (the first state is pre-match).
 The component is then added to the root, so that it isn't garbage collected.
 ```c++
@@ -43,7 +43,7 @@ void AShooterGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 ```
 
-### The Matchmaker
+### The matchmaker
 The matchmaker expects periodic updates from the game server indicating that it is accepting client connections ('ready').
 If it does not receive any updates from a game server after a set interval, it marks the game server as 'not ready' and no longer routes clients to it.
 Clients can query the matchmaker for available game servers.

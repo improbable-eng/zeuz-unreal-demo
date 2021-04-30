@@ -1,8 +1,8 @@
-## Basic zeuz Support
+## Basic zeuz support
 In order to make the game server exit when the match is over, we can adapt the [default game mode timer](../Source/ShooterGame/Private/Online/ShooterGameMode.cpp) which handles the transitions between the game's states.
 To gracefully achieve this, the client should be sent back to the main menu before the server exits.
 
-### Send Client Back to the Main Menu
+### Send client back to the main menu
 ```c++
 // Source/ShooterGame/Private/Online/ShooterGameMode.cpp::DefaultTimer
 
@@ -22,7 +22,7 @@ if (GetMatchState() == MatchState::WaitingPostMatch)
 Instead of the game server calling `RestartGame()` when it is transitioning out of its post-match state, we instead instruct clients to return to the main menu, using the RPC `ClientReturnToMainMenuWithTextReason`.
 Note that this RPC implementation is the same as the existing `ShooterPlayerController` definition of `ClientReturnToMainMenu` with added message propagation (in fact the deprecated `ClientReturnToMainMenu` method was updated with the new `ClientReturnToMainMenuWithTextReason` method definition).
 
-### Exit the Process
+### Exit the process
 ```c++
 // Source/ShooterGame/Private/Online/ShooterGameMode.cpp::DefaultTimer
 
@@ -42,7 +42,7 @@ Once the game server has instructed the clients to return to the main menu, we t
 This *waiting* also occurs in the `DefaultTimer` method, as once we instruct players to return to the main menu (and therefore disconnect), we do not transition the game state, staying in post-match.
 Subsequent calls to `DefaultTimer` then enter the case in the snippet above, where the number of connected players is checked and the game server is exited if there are no connected players.
 
-### Other Changes
+### Other changes
 Besides the behavioural changes above, the on-screen messaging was changed to reflect the new player flow.
 Instead of *'Starting new match...'* displaying during the countdown on the post-match scoreboard, the text now reads *'Match ending...'*.
 Method names were also updated to reflect the change.

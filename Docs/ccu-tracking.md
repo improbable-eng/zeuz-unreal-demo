@@ -1,10 +1,10 @@
-## CCU Tracking (A2S Protocol)
+## CCU tracking (A2S protocol)
 To support the A2S (any to server) protocol, an A2S server component is dropped in.
 This keeps changes simple and makes the component much more manageable.
 
 The component also has settings, configurable from the Unreal Engine editor or the command line (command line options prioritised).
 
-### A2S Server Lifecycle
+### A2S server lifecycle
 The A2S server is created and started during the game mode's `BeginPlay` event, since we only wish to serve A2S queries when the game has started.
 The server component is then added to the root, so that it isn't garbage collected.
 ```c++
@@ -36,15 +36,15 @@ void AShooterGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 ```
 
-### Starting the Server
+### Starting the server
 The [A2S server](../Source/ShooterGame/Private/Online/A2S/A2SServer.cpp) uses Unreal's UDP socket API to build a send (see `UA2SServer::OpenSendSocket`) and receive (see `UA2SServer::OpenReceiveSocket`) socket which use the same port.
 It is advisable that the same port is used for both sending and receiving as some implementations of A2S clients expect responses from the same address they make queries to.
 
-### Stopping the Server
+### Stopping the server
 Unreal's UDP socket API also offers ways to close and destroy sockets, which we make use of.
 It's also important to note that a mutex is used, to ensure that the socket isn't closed before a query is handled (i.e. a response sent).
 
-### Building a Response
+### Building a response
 Building an `A2S_INFO` response is low level and requires byte-level operations.
 A fully documented example response is available in `UA2SServer::BuildA2SInfoResponse` but it is strongly advised that you read [the protocol documentation](https://developer.valvesoftware.com/wiki/Server_queries) when implementing your own response.
 
