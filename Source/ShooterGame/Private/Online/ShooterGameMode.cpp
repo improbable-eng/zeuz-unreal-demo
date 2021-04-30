@@ -121,6 +121,13 @@ void AShooterGameMode::DefaultTimer()
 	AShooterGameState* const MyGameState = Cast<AShooterGameState>(GameState);
 	if (MyGameState && MyGameState->RemainingTime > 0 && !MyGameState->bTimerPaused)
 	{
+		// If we are waiting for match to start (MatchState::WaitingToStart) and there has not yet been a connected
+		// player, do not decrement the counter
+		if (GetMatchState() == MatchState::WaitingToStart && !bHasPlayerConnected)
+		{
+			return;
+		}
+
 		MyGameState->RemainingTime--;
 		
 		if (MyGameState->RemainingTime <= 0)
@@ -327,6 +334,8 @@ void AShooterGameMode::PreLogin(const FString& Options, const FString& Address, 
 void AShooterGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
+
+	bHasPlayerConnected = true;
 
 	// update spectator location for client
 	AShooterPlayerController* NewPC = Cast<AShooterPlayerController>(NewPlayer);

@@ -161,6 +161,9 @@ protected:
 	/** Returns game session class to use */
 	virtual TSubclassOf<AGameSession> GetGameSessionClass() const override;	
 
+	/** Tracks if a game has joined the server at least once */
+	bool bHasPlayerConnected = false;
+
 public:	
 
 	/** finish current match and lock players */
