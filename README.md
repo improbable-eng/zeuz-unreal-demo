@@ -4,7 +4,7 @@ An adaptation of the Unreal Engine [ShooterGame](https://docs.unrealengine.com/e
 For information on uploading and hosting game servers on zeuz, please see [doc.zeuz.io](https://doc.zeuz.io/).
 
 
-## Before you read
+## Before getting started
 Each section addresses a different behaviour missing from the unmodified [ShooterGame](https://docs.unrealengine.com/en-US/Resources/SampleGames/ShooterGame/index.html) project.
 You should use this project as an example to read the changes you need to make to your game to better support zeuz orchestration.
 
@@ -24,9 +24,6 @@ apiendpoint=https://zcp.zeuz.io/api/v1
 Before you follow this example, there are a couple of general points to note:
 - The '**Files changed**' list for each section only notes the most significant changes.
     - For example, the files changed to edit the on-screen messaging text at the end of the game in ['Basic zeuz support'](#basic-zeuz-support) are omitted.
-- Unreal handles its internal command line arguments differently to custom ones. Read the payload commands in each section carefully for the correct use.
-    - Internal flag values are assigned to a flag with an `=` between the flag key and value (e.g. `-PORT=29000`).
-    - Custom flag values are assigned to a flag with a space between the flag key and value (e.g. `-payloadId my-payload-id-123`).
 - The menu of the original ShooterGame project has been modified to reflect the connections available when this game is used with zeuz and a matchmaker. For more information, see the [UI Changes section](#ui-changes).
     - Note: These UI changes are **not** necessary to make your game support zeuz orchestration.
 
