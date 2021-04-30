@@ -97,7 +97,7 @@ If you don't see this, speak to your zeuz account manager.
 [ShooterGameMode.cpp](Source/ShooterGame/Private/Online/ShooterGameMode.cpp),
 [ShooterGame.Build.cs](Source/ShooterGame/ShooterGame.Build.cs)
 
-To support CCU tracking, the game server must implement the [A2S (any to server) protocol](https://developer.valvesoftware.com/wiki/Server_queries).
+To support CCU tracking, the game server must implement the [A2S (Any to Server) protocol](https://developer.valvesoftware.com/wiki/Server_queries).
 For this, an [`A2SServer` component](Source/ShooterGame/Private/Online/A2S/A2SServer.h) is created which utilises Unreal's `UDPSocket` API to listen to and respond to A2S queries.
 This example only supports `A2S_INFO` queries, as is required by zeuz CCU tracking, but you may wish to support further A2S features for your own purposes.
 
