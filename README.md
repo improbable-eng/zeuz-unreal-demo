@@ -52,8 +52,6 @@ Whilst this is a functional game hosted on zeuz, there are a few problems which 
     - See [Basic zeuz support](#basic-zeuz-support).
 - zeuz cannot read the number of players connected to the server.
     - See [CCU tracking (A2S protocol)](#ccu-tracking-a2s-protocol).
-- Players can attempt to connect to the server when it is not ready.
-    - See [Server readiness](#server-readiness).
 - Since the payload image is started whenever a payload is ready (and unreserved), matches can start for unreserved payloads.
     - See [Server waiting](#server-waiting).
 
@@ -113,70 +111,6 @@ In addition to `${statsPort}` being used in the `execargs`, the payload ID (acce
 This is not crucial for zeuz to track CCUs, but useful if you wish to track CCUs per payload for your own queries.
 
 
-## Server readiness
-> **For a full description of the changes with code snippets, see the [full docs](Docs/server-readiness.md) of this change.**
-
-A payload being ready doesn't mean that the game server running on it is ready to accept connections from players.
-
-**Files changed:** [Discoverability.h](Source/ShooterGame/Private/Online/Discoverability/Discoverability.h),
-[Discoverability.cpp](Source/ShooterGame/Private/Online/Discoverability/Discoverability.cpp),
-[DiscoverabilitySettings.h](Source/ShooterGame/Private/Online/Discoverability/DiscoverabilitySettings.h),
-[ShooterGameMode.h](Source/ShooterGame/Public/Online/ShooterGameMode.h),
-[ShooterGameMode.cpp](Source/ShooterGame/Private/Online/ShooterGameMode.cpp),
-[ShooterGame.Build.cs](Source/ShooterGame/ShooterGame.Build.cs)
-
-The game server has a [`Discoverability` component](Source/ShooterGame/Private/Online/Discoverability/Discoverability.h) which periodically `POST`s to a matchmaker service (see [full docs](Docs/server-readiness.md) for matchmaker details) to indicate that it is ready to accept connections.
-
-Similarly to the [A2S server](#ccu-tracking-a2s-protocol), this component is created by the [game mode (`ShooterGameMode`)](Source/ShooterGame/Private/Online/ShooterGameMode.cpp) and is started during the `BeginPlay` event.
-However, when the match state is `WaitingPostMatch`, we do not wish to have any more players connect to the game server, so the updates are stopped (see [`ShooterGameMode::DefaultTimer`](Source/ShooterGame/Private/Online/ShooterGameMode.cpp)).
-There will be a short time between the last update sent to the matchmaker and the matchmaker labelling the game server as 'not ready', in which the matchmaker may still route clients to the game server.
-If a player connects in this case, they will see the end of game scoreboard and then disconnect gracefully, like any other player.
-
-The matchmaker endpoint, along with the payload ID and IP, is specified to the game server in the payload command, so it can interact with the matchmaker:
-```
-/opt/zeuz/bin/payloadrunner
-run
-binaryactivename=ShooterServer
-binaryexecpath=/opt/zeuz/gameserver/ShooterServer.sh
-execargs=/Game/Maps/Highrise -log -NOSTEAM -PORT=${servicePort:PortName} -payloadIp ${serviceIP} -payloadId ${payloadID} -matchmakerAddr "http://123.45.67.89:9000"
-```
-
-The matchmaker is also used to allow players to find a server to play on, using the `GET` endpoint, see the [UI Changes section](#ui-changes).
-
-An example matchmaker used with this project can be found [here](https://github.com/improbable/zeuz-demo).
-When using this matchmaker, the endpoint set for the `Discoverability` component should be `http://<MATCHMAKER IP>:<PORT>/v1/gameservers`.
-
-
-## UI changes
-Whilst not necessary for supporting zeuz orchestration, the base ShooterGame example UI has been modified to allow players to connect to zeuz-hosted game servers.
-These options are 'JOIN' and 'DIRECT CONNECT'.
-Unsupported options for 'HOST', 'LEADERBOARDS', 'ONLINE STORE' and 'DEMOS' have been removed from the menu, but their source code still exists.
-
-**Files changed:** [DefaultGame.ini](Config/DefaultGame.ini),
-[ShooterGameInstance.h](Source/ShooterGame/Public/ShooterGameInstance.h),
-[ShooterGameInstance.cpp](Source/ShooterGame/Private/ShooterGameInstance.cpp),
-[ShooterMainMenu.h](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.h),
-[ShooterMainMenu.cpp](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp),
-[SShooterDirectConnect.cpp](Source/ShooterGame/Private/UI/Menu/Widgets/SShooterDirectConnect.cpp),
-[SShooterDirectConnect.h](Source/ShooterGame/Private/UI/Menu/Widgets/SShooterDirectConnect.h)
-
-### JOIN
-> **More information on this exchange can be found in the [Server Readiness full docs](Docs/server-readiness.md).**
-
-If a matchmaker is set up (see [the Server Readiness full docs](Docs/server-readiness.md)), clicking 'JOIN' will query the matchmaker for a game server and connect to it.
-The endpoint of the matchmaker is specified in [DefaultGame.ini](Config/DefaultGame.ini) (hint: use quotation marks around the URL, e.g. `MatchmakerEndpoint="http://mymatchmakerip:9000/"`).
-If no endpoint is specified, the 'JOIN' button will not render.
-
-When using the [example matchmaker](https://github.com/improbable/zeuz-demo), the endpoint set should be `"http://<MATCHMAKER IP>:<PORT>/v1/gameservers"`.
-
-A simple button is added to the [`MainMenu` component](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp) and a HTTP GET request (see [FShooterMainMenu::OnJoinClicked](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp)) is made to the matchmaker when it is clicked.
-
-### DIRECT CONNECT
-If you know the IP and port of the game server you wish to connect to, you can enter it in the text box that shows when 'DIRECT CONNECT' is chosen from the main menu.
-
-This is a new [`DirectConnect` widget](Source/ShooterGame/Private/UI/Menu/Widgets/SShooterDirectConnect.cpp) that is added to the [main menu](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp).
-
-
 ## Server waiting
 > **For a full description of the changes with code snippets, see the [full docs](Docs/server-waiting.md) of this change.**
 
@@ -190,3 +124,19 @@ This can cause problems if a payload spends a long amount of time as unreserved 
 
 To overcome this, the timer of the game (see [`ShooterGameMode::DefaultTimer`](Source/ShooterGame/Private/Online/ShooterGameMode.cpp)) doesn't count down when the match is waiting to start **and** there has not yet been a connected player.
 After the first player connects, the timer will count down to the start of the game.
+
+
+## UI changes
+Whilst not necessary for supporting zeuz orchestration, the base ShooterGame example UI has been modified to allow players to connect to zeuz-hosted game servers.
+
+**Files changed:** [DefaultGame.ini](Config/DefaultGame.ini),
+[ShooterGameInstance.h](Source/ShooterGame/Public/ShooterGameInstance.h),
+[ShooterGameInstance.cpp](Source/ShooterGame/Private/ShooterGameInstance.cpp),
+[ShooterMainMenu.cpp](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp),
+[SShooterDirectConnect.cpp](Source/ShooterGame/Private/UI/Menu/Widgets/SShooterDirectConnect.cpp),
+[SShooterDirectConnect.h](Source/ShooterGame/Private/UI/Menu/Widgets/SShooterDirectConnect.h)
+
+The option for 'DIRECT CONNECT' allows players to enter the address of the game server they wish to connect to.
+Unsupported options for 'HOST', 'LEADERBOARDS', 'ONLINE STORE' and 'DEMOS' have been removed from the menu, but their source code still exists.
+
+This is a new [`DirectConnect` widget](Source/ShooterGame/Private/UI/Menu/Widgets/SShooterDirectConnect.cpp) that is added to the [main menu](Source/ShooterGame/Private/UI/Menu/ShooterMainMenu.cpp).
