@@ -9,13 +9,13 @@ Each section addresses a different behaviour missing from the unmodified [Shoote
 You should use this project as an example to read the changes you need to make to your game to better support zeuz orchestration.
 
 The payload commands in each section show only the fields required to enable the section's behaviour.
-To enable all of the behaviours, add a matchmaker endpoint (`MatchmakerEndpoint`) to [DefaultGame.ini](Config/DefaultGame.ini) and use the following payload command:
+To enable all of the behaviours use the following payload command:
 ```
 /opt/zeuz/bin/payloadrunner
 run
 binaryactivename=ShooterServer
 binaryexecpath=/opt/zeuz/gameserver/ShooterServer.sh
-execargs=/Game/Maps/Highrise -log -NOSTEAM -PORT=${servicePort:PortName} -statsPort ${statsPort} -payloadIp ${serviceIP} -payloadId ${payloadID} -matchmakerAddr <MATCHMAKER ENDPOINT>
+execargs=/Game/Maps/Highrise -log -NOSTEAM -PORT=${servicePort:PortName} -statsPort ${statsPort} -payloadId ${payloadID}
 apikey=<API_KEY>
 apisecret=<API_KEY_PASSWORD>
 apiendpoint=https://zcp.zeuz.io/api/v1
@@ -24,7 +24,7 @@ apiendpoint=https://zcp.zeuz.io/api/v1
 Before you follow this example, there are a couple of general points to note:
 - The '**Files changed**' list for each section only notes the most significant changes.
     - For example, the files changed to edit the on-screen messaging text at the end of the game in ['Basic zeuz support'](#basic-zeuz-support) are omitted.
-- The menu of the original ShooterGame project has been modified to reflect the connections available when this game is used with zeuz and a matchmaker. For more information, see the [UI Changes section](#ui-changes).
+- The menu of the original ShooterGame project has been modified to reflect the connections available when this game is used with zeuz. For more information, see the [UI Changes section](#ui-changes).
     - Note: These UI changes are **not** necessary to make your game support zeuz orchestration.
 
 Lastly, if you wish to follow along, making similar changes to the [ShooterGame](https://docs.unrealengine.com/en-US/Resources/SampleGames/ShooterGame/index.html) project, you should ensure you are able to package the unmodified game as a dedicated server and connect with a client.
