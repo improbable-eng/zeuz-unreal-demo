@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{BF778BA0-4B0E-5EF7-01A1-8CAEC626B841}",
+	"EngineAssociation": "{3DE51917-4F9D-10CF-6FF1-8BA5287B3E42}",
 	"Category": "Samples",
 	"Description": "",
 	"Modules": [
@@ -75,6 +75,16 @@
 		{
 			"Name": "Synthesis",
 			"Enabled": true
+		},
+		{
+			"Name": "Zeuzsdk",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/d83aaf9080134e10b28c2e7216c63828"
+		},
+		{
+			"Name": "OnlineSubsystemZeuz",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/d83aaf9080134e10b28c2e7216c63828"
 		}
 	],
 	"TargetPlatforms": [
