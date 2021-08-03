@@ -6,6 +6,8 @@
 #include "ShooterScoreboardWidgetStyle.h"
 #include "ShooterUIHelpers.h"
 #include "Online/ShooterPlayerState.h"
+#include "IZeuzsdk.h"
+#include "ZeuzsdkClasses.h"
 
 #define LOCTEXT_NAMESPACE "ShooterScoreboard"
 
@@ -17,7 +19,7 @@
 #define	NORM_PADDING	(FMargin(5))
 
 void SShooterScoreboardWidget::Construct(const FArguments& InArgs)
-{
+{	
 	ScoreboardStyle = &FShooterStyle::Get().GetWidgetStyle<FShooterScoreboardStyle>("DefaultShooterScoreboardStyle");
 
 	PCOwner = InArgs._PCOwner;
@@ -41,6 +43,12 @@ void SShooterScoreboardWidget::Construct(const FArguments& InArgs)
 	Columns.Add(FColumnData(LOCTEXT("ScoreColumn", "Score"),
 		ScoreboardStyle->ScoreStatColor,
 		FOnGetPlayerStateAttribute::CreateSP(this, &SShooterScoreboardWidget::GetAttributeValue_Score)));
+
+	// !!! test only !!!
+	Columns.Add(FColumnData(LOCTEXT("TestColumn", "Test"),
+		ScoreboardStyle->KillStatColor,
+		FOnGetPlayerStateAttribute::CreateSP(this, &SShooterScoreboardWidget::GetAttributeValue_Test)));
+
 
 	TSharedPtr<SHorizontalBox> HeaderCols;
 
@@ -862,6 +870,7 @@ int32 SShooterScoreboardWidget::GetAttributeValue_Kills(AShooterPlayerState* Pla
 	return PlayerState->GetKills();
 }
 
+
 int32 SShooterScoreboardWidget::GetAttributeValue_Deaths(AShooterPlayerState* PlayerState) const
 {
 	return PlayerState->GetDeaths();
@@ -870,6 +879,13 @@ int32 SShooterScoreboardWidget::GetAttributeValue_Deaths(AShooterPlayerState* Pl
 int32 SShooterScoreboardWidget::GetAttributeValue_Score(AShooterPlayerState* PlayerState) const
 {
 	return FMath::TruncToInt(PlayerState->GetScore());
+}
+
+// !!! test only !!!
+
+int32 SShooterScoreboardWidget::GetAttributeValue_Test(AShooterPlayerState* PlayerState) const
+{
+	return 0;
 }
 
 #undef LOCTEXT_NAMESPACE

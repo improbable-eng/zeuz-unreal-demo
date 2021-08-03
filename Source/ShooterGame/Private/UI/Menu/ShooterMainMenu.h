@@ -7,6 +7,7 @@
 #include "Widgets/SShooterServerList.h"
 #include "Widgets/SShooterDemoList.h"
 #include "Widgets/SShooterDirectConnect.h"
+#include "Widgets/SShooterJoin.h"
 #include "Widgets/SShooterLeaderboard.h"
 #include "Widgets/SShooterOnlineStore.h"
 #include "Widgets/SShooterSplitScreenLobbyWidget.h"
@@ -96,6 +97,9 @@ protected:
 	/** The edit text widget. */
 	TSharedPtr<class SShooterDirectConnect> DirectConnectWidget;
 
+	/** The join widget */
+	TSharedPtr<class SShooterJoin> JoinWidget;
+
 	/** custom menu */
 	TSharedPtr<class FShooterMenuItem> JoinServerItem;
 
@@ -107,6 +111,9 @@ protected:
 
 	/** custom menu item for direct connecting */
 	TSharedPtr<class FShooterMenuItem> DirectConnectItem;
+
+	/** custom menu item for joining an existing game */
+	TSharedPtr<class FShooterMenuItem> JoinItem;
 
 	/** Custom demo browser menu */
 	TSharedPtr<class FShooterMenuItem> DemoBrowserItem;
@@ -224,14 +231,14 @@ protected:
 	/** Join server */
 	void OnJoinServer();
 
-	/** When the 'Join' button is clicked, fetch a sever from the matchmaker and connect to it */
-	void OnJoinClicked();
-
 	/** Show leaderboard */
 	void OnShowLeaderboard();
 
 	/** Show direct connect menu */
 	void OnShowDirectConnect();
+
+	/** Show the join menu (available games) */
+	void OnShowJoin();
 
 	/** Show online store */
 	void OnShowOnlineStore();

@@ -301,9 +301,14 @@ void FShooterMainMenu::Construct(TWeakObjectPtr<UShooterGameInstance> _GameInsta
 #else
 
 		// JOIN menu option - only add this if a matchmaker endpoint is defined
+
 		if (!MatchmakerEndpoint.IsEmpty())
 		{
-			MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Join", "JOIN"), this, &FShooterMainMenu::OnJoinClicked);
+			// moved OnJoinClicked functionality from ShooterMainMenu to SShooterJoin
+
+			MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Join", "JOIN"), this, &FShooterMainMenu::OnShowJoin);
+			MenuHelper::AddCustomMenuItem(JoinItem, SAssignNew(JoinWidget, SShooterJoin).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
+			JoinWidget->MatchmakerEndpoint = MatchmakerEndpoint;
 		}
 
 		// Direct Connect
@@ -1217,70 +1222,7 @@ void FShooterMainMenu::OnJoinServer()
 	StartOnlinePrivilegeTask(IOnlineIdentity::FOnGetUserPrivilegeCompleteDelegate::CreateSP(this, &FShooterMainMenu::OnUserCanPlayOnlineJoin));
 }
 
-void FShooterMainMenu::OnJoinClicked()
-{
-	UE_LOG(LogOnline, Display, TEXT("Fetching server to join from matchmaker at %s"), *MatchmakerEndpoint);
-
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FHttpModule::Get().CreateRequest();
-	Request->SetURL(MatchmakerEndpoint);
-	Request->SetVerb("GET");
-	Request->SetHeader("Content-Type", TEXT("application/json"));
-
-	// Add callback to join the server if the fetch was a success
-	Request->OnProcessRequestComplete().BindLambda([&](FHttpRequestPtr _, FHttpResponsePtr Response, bool bSuccessful)
-	{
-		if (!bSuccessful || !Response.IsValid())
-		{
-			UE_LOG(LogOnline, Warning, TEXT("Posting to matchmaker failed"));
-			return;
-		}
-
-		const int32 ResponseCode = Response->GetResponseCode();
-		if (ResponseCode < 200 || ResponseCode >= 300)
-		{
-			UE_LOG(LogOnline, Warning, TEXT("Posting to matchmaker failed with error code %d (message: %s)"),
-			       ResponseCode, *Response->GetContentAsString());
-			return;
-		}
-
-		TSharedPtr<FJsonObject> JsonObject;
-		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Response->GetContentAsString());
-		if (FJsonSerializer::Deserialize(Reader, JsonObject))
-		{
-			const FString IP = JsonObject->GetStringField("IP");
-			const int32 Port = JsonObject->GetIntegerField("Port");
-			const FString Address = FString::Printf(TEXT("%s:%d"), *IP, Port);
-
-			if (APlayerController* PlayerController = PlayerOwner->PlayerController)
-			{
-				if (GEngine && GEngine->GameViewport)
-				{
-					GEngine->GameViewport->RemoveAllViewportWidgets();
-				}
-				else
-				{
-					UE_LOG(LogOnline, Warning, TEXT("Could not get game viewport, no widgets removed"));
-				}
-
-				if (UShooterGameInstance* GInstance = Cast<UShooterGameInstance>(PlayerController->GetGameInstance()))
-				{
-					GInstance->DirectConnectToSession(Address);
-				}
-				else
-				{
-                    UE_LOG(LogOnline, Warning, TEXT("Could not get game instance, joining server failed"));
-                }
-			}
-		}
-		else
-		{
-			UE_LOG(LogOnline, Warning, TEXT("Could not deserialise JSON (raw: %s)"),
-			       *Response->GetContentAsString());
-		}
-	});
-
-	Request->ProcessRequest();
-}
+// moved functionality of OnJoinClicked to SShooterJoin
 
 void FShooterMainMenu::OnUserCanPlayOnlineJoin(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, uint32 PrivilegeResults)
 {
@@ -1360,6 +1302,12 @@ void FShooterMainMenu::OnShowLeaderboard()
 void FShooterMainMenu::OnShowDirectConnect()
 {
 	MenuWidget->NextMenu = DirectConnectItem->SubMenu;
+	MenuWidget->EnterSubMenu();
+}
+
+void FShooterMainMenu::OnShowJoin()
+{
+	MenuWidget->NextMenu = JoinItem->SubMenu;
 	MenuWidget->EnterSubMenu();
 }
 

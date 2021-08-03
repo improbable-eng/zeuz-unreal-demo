@@ -29,8 +29,10 @@ public class ShooterGame : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
+				"InputCore",
 				"OnlineSubsystem",
 				"OnlineSubsystemUtils",
+				"OnlineSubsystemZeuz",
 				"AssetRegistry",
 				"NavigationSystem",
 				"AIModule",
@@ -54,7 +56,10 @@ public class ShooterGame : ModuleRules
 				"Networking",
 				"Sockets",
 				"Http",
-				"Json"
+				"Json",
+				"JsonUtilities",
+				"Zeuzsdk",
+				"OnlineSubsystemZeuz"
 			}
 		);
 

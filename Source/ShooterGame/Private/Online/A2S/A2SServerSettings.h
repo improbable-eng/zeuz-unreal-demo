@@ -10,7 +10,7 @@ struct FA2SServerSettings
 
 	/** Port for A2S server to listen and send on */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "A2S Server Properties")
-	int Port = 29001;
+	int Port = 28001;
 
 	/** UDP socket buffer size */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "A2S Server Properties")

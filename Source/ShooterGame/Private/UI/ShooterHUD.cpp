@@ -3,6 +3,7 @@
 #include "ShooterGame.h"
 #include "UI/ShooterHUD.h"
 #include "SShooterScoreboardWidget.h"
+#include "LANTestWidget.h"
 #include "SChatWidget.h"
 #include "Engine/ViewportSplitScreen.h"
 #include "Weapons/ShooterWeapon.h"
@@ -1045,6 +1046,48 @@ bool AShooterHUD::ShowScoreboard(bool bEnable, bool bFocus)
 		}
 	}
 	return true;
+}
+
+void AShooterHUD::ToggleLANTestWidget()
+{
+	ShowLANTestWidget(!bIsLANTestWidgetVisible);
+}
+
+void AShooterHUD::ShowLANTestWidget(bool bEnable)
+{
+	if (bEnable == bIsLANTestWidgetVisible)
+		return;
+
+	bIsLANTestWidgetVisible = bEnable;
+
+	if (bIsLANTestWidgetVisible)
+	{
+		SAssignNew(LANWidgetOverlay, SOverlay)
+			+ SOverlay::Slot()
+			.HAlign(EHorizontalAlignment::HAlign_Center)
+			.VAlign(EVerticalAlignment::VAlign_Center)
+			.Padding(FMargin(50))
+			[
+				SAssignNew(LANWidget, LANTestWidget)
+				.PCOwner(MakeWeakObjectPtr(PlayerOwner))
+			.MatchState(GetMatchState())
+			];
+
+		GEngine->GameViewport->AddViewportWidgetContent(
+			SAssignNew(LANWidgetContainer, SWeakWidget)
+			.PossiblyNullContent(LANWidgetOverlay));
+	}
+
+	else
+	{
+		if (LANWidgetContainer.IsValid())
+		{
+			if (GEngine && GEngine->GameViewport)
+			{
+				GEngine->GameViewport->RemoveViewportWidgetContent(LANWidgetContainer.ToSharedRef());
+			}
+		}
+	}
 }
 
 void AShooterHUD::ToggleChat()

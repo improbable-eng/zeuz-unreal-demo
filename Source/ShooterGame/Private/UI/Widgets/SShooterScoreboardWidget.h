@@ -171,6 +171,9 @@ protected:
 	/** get attribute value for score */
 	int32 GetAttributeValue_Score(class AShooterPlayerState* PlayerState) const;
 
+	/** !!! test only !!! always returns 0 */
+	int32 GetAttributeValue_Test(class AShooterPlayerState* PlayerState) const;
+
 	/** triggers a sound effect to play */
 	void PlaySound(const FSlateSound& SoundToPlay) const;
 

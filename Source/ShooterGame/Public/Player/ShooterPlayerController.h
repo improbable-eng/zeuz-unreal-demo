@@ -69,6 +69,9 @@ public:
 	/** toggle InGameMenu handler */
 	void OnToggleInGameMenu();
 
+	/** toggle LANTest handler */
+	void OnToggleLANTest();
+
 	/** Show the in-game menu if it's not already showing */
 	void ShowInGameMenu();
 

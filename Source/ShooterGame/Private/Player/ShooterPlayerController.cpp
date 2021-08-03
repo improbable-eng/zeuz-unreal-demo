@@ -79,6 +79,7 @@ void AShooterPlayerController::SetupInputComponent()
 	{
 		// UI input
 		InputComponent->BindAction("InGameMenu", IE_Pressed, this, &AShooterPlayerController::OnToggleInGameMenu);
+		InputComponent->BindAction("ToggleLANTestWidget", IE_Pressed, this, &AShooterPlayerController::OnToggleLANTest);
 		InputComponent->BindAction("Scoreboard", IE_Pressed, this, &AShooterPlayerController::OnShowScoreboard);
 		InputComponent->BindAction("Scoreboard", IE_Released, this, &AShooterPlayerController::OnHideScoreboard);
 		InputComponent->BindAction("ConditionalCloseScoreboard", IE_Pressed, this, &AShooterPlayerController::OnConditionalCloseScoreboard);
@@ -582,6 +583,15 @@ void AShooterPlayerController::OnToggleInGameMenu()
 	if (ShooterIngameMenu.IsValid())
 	{
 		ShooterIngameMenu->ToggleGameMenu();
+	}
+}
+
+void AShooterPlayerController::OnToggleLANTest()
+{
+	AShooterHUD* ShooterHUD = GetShooterHUD();
+	if (ShooterHUD && (ShooterHUD->IsMatchOver() == false))
+	{
+		ShooterHUD->ToggleLANTestWidget();
 	}
 }
 

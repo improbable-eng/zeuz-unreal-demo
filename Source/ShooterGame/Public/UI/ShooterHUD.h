@@ -118,6 +118,13 @@ public:
 	 * @param	VictimPlayerState	Played that was killed state.
 	 * @param	KillerDamageType	The type of damaged that caused the death.
 	 */
+
+	/** Toggles LAN test widget*/
+	void ToggleLANTestWidget();
+
+	/** Enables or disables the LAN test widget, according to bEnable*/
+	void ShowLANTestWidget(bool bEnable);
+
 	void ShowDeathMessage(class AShooterPlayerState* KillerPlayerState, class AShooterPlayerState* VictimPlayerState, const UDamageType* KillerDamageType);
 
 	/*
@@ -292,6 +299,9 @@ protected:
 	/** Is the scoreboard widget on screen? */
 	uint32 bIsScoreBoardVisible:1;
 
+	/** Is the LAN test widget on screen? */
+	uint32 bIsLANTestWidgetVisible:1;
+
 	/** Scoreboard widget. */
 	TSharedPtr<class SShooterScoreboardWidget>	ScoreboardWidget;
 
@@ -300,6 +310,15 @@ protected:
 
 	/** Scoreboard widget container - used for removing */
 	TSharedPtr<class SWidget> ScoreboardWidgetContainer;
+
+	/** LAN Test widget. */
+	TSharedPtr<class LANTestWidget>	LANWidget;
+
+	/** LAN Test widget overlay. */
+	TSharedPtr<class SOverlay>	LANWidgetOverlay;
+
+	/** LAN Test widget container - used for removing */
+	TSharedPtr<class SWidget> LANWidgetContainer;
 
 	/** Chatbox widget. */
 	TSharedPtr<class SChatWidget> ChatWidget;
